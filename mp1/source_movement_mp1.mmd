@@ -1,0 +1,38 @@
+<change> 80286f80 49579081 # mod entry point hook, after prologue of ComputeMovement
+<change> 80286f84 80010164 # next four changes are the epilogue of ComputeMovement
+<change> 80286f88 7c0803a6
+<change> 80286f8c 38210160
+<change> 80286f90 4e800020
+<change> 805a9eec 46800000 # Next two are RTOC constants used for MaxPositiveVerticalVelocity
+<change> 805a9ef0 46800000 # Allows player to fall at very high speeds, number somewhat arbitrary
+<change> 80016ad0 48000254 # Skips over velocity damping when initially hitting water
+<change> 80283a30 60000000 # disables morphball stopping
+<change> 80283a38 60000000
+<change> 80283a40 60000000
+<change> 80283a44 60000000
+<cvar> airaccelerate_mul f32
+<cvar> accelerate_mul f32
+<cvar> max_walk_speed f32
+<cvar> friction_mul f32
+<cvar> airaccelerate_wishspeed_clamp f32
+<cvar> jump_impulse f32
+<cvar> gravity_mul f32
+<cvar> input_wishspeed f32
+<cvar> stop_speed f32
+<cvar> underwater_movement_depth f32
+<cvar> leniency_ticks i32
+<cvar> rocket_blast_radius f32
+<cvar> rocket_velocity_multiplier f32
+<cvar> rocket_jump_base_speed f32
+<cvar> rocket_jump_speed_falloff_max f32
+<cvar> rocket_jump_speed_falloff_min f32
+<cvar> rocket_jump_max_damage f32
+<cvar> game_timescale f32
+<cvar> show_logs bool
+<vthook> hooked_energyprojectile_think 803e716c
+<vthook> hooked_cmfgame_onmessage 803d99e0
+<vthook> hooked_elementgen_update 803eda8c
+<blhook> hooked_internalupdate 8031eb58
+<vthook> hooked_cmfgame_draw 803d99e8
+<trampoline> hooked_computemovement 80286f74
+<elf> source_movement_mp1.elf

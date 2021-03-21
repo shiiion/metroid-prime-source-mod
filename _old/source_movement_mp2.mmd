@@ -1,0 +1,22 @@
+<change> 801883f8 49677c09 # mod entry point hook, after prologue of ComputeMovement
+<change> 801883fc 80010184 # next four changes are the epilogue of ComputeMovement
+<change> 80188400 7c0803a6
+<change> 80188404 38210180
+<change> 80188408 4e800020
+<change> 8041a568 46800000 # Next four are RTOC constants used for MaxPositiveVerticalVelocity
+<change> 8041a56c 46800000 # Allows player to fall at very high speeds, number somewhat arbitrary
+<change> 8041a570 46800000
+<change> 8041a574 46800000
+<change> 80015684 480004a8 # skip over water damping
+<cvar> airaccelerate_mul f32
+<cvar> accelerate_mul f32
+<cvar> max_walk_speed f32
+<cvar> friction_mul f32
+<cvar> airaccelerate_wishspeed_clamp f32
+<cvar> jump_impulse f32
+<cvar> gravity_mul f32
+<cvar> input_wishspeed f32
+<cvar> stop_speed f32
+<cvar> underwater_movement_depth f32
+<cvar> leniency_ticks i32
+<elf> sourcemvmt_mp2gc.elf

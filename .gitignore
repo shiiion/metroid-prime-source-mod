@@ -1,0 +1,5 @@
+.vscode/*
+.history/
+*.code-workspace
+binary_dir/*
+build_dir/*

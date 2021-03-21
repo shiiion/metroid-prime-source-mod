@@ -1,0 +1,21 @@
+---
+BasedOnStyle: Google
+IndentWidth: 3
+---
+Language: Cpp
+AccessModifierOffset: -3
+ColumnLimit: 100
+DerivePointerAlignment: false
+IncludeBlocks: Regroup 
+IncludeCategories:
+  - Regex:          '^<.*\.h>'
+    Priority:       1
+  - Regex:          '^<.*'
+    Priority:       2
+  - Regex:          '.*'
+    Priority:       3
+PointerAlignment: Left
+ReflowComments: true
+SortIncludes: true
+---
+
