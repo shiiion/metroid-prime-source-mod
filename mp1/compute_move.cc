@@ -5,11 +5,13 @@
 #include "mp1/rstl/string.hh"
 #include "mp1/mod_shared.hh"
 
+constexpr float kInputEpsilon = 0.001f;
+
 extern "C" {
 float jump_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 0.3f, 1.f, 1.f, 1.f};
 float accel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 0.3f, 0.3f, 1.f, 0.3f};
 // how fast can turning happen?
-float airaccel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 0.01f, 0.1f, 1.f, 1.f};
+float airaccel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 0.1f, 0.1f, 1.f, 1.f};
 // how much speed is gained from turning?
 float airmove_clamp_table[8] = {1.f, 1.f, 1.f, 1.f, 0.5f, 0.5f, 1.f, 1.f};
 
@@ -72,10 +74,17 @@ void compute_air_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfac
    forward.normalize();
    right.normalize();
 
-   const float fwd_input =
+   float fwd_input =
        get_analog_input(ECommands::Forward, input) - get_analog_input(ECommands::Backward, input);
-   const float side_input =
+   float side_input =
        get_analog_input(ECommands::LookRight, input) - get_analog_input(ECommands::LookLeft, input);
+
+   if (fabs(fwd_input) > kInputEpsilon) {
+      fwd_input = sign(fwd_input) * 1.f;
+   }
+   if (fabs(side_input) > kInputEpsilon) {
+      side_input = sign(side_input) * 1.f;
+   }
 
    vec3 wishvel = forward * (fwd_input * input_wishspeed) + right * (side_input * input_wishspeed);
    wishvel.z = 0.f;
@@ -132,6 +141,13 @@ void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfa
        get_analog_input(ECommands::Forward, input) - get_analog_input(ECommands::Backward, input);
    float side_input =
        get_analog_input(ECommands::LookRight, input) - get_analog_input(ECommands::LookLeft, input);
+
+   if (fabs(fwd_input) > kInputEpsilon) {
+      fwd_input = sign(fwd_input);
+   }
+   if (fabs(side_input) > kInputEpsilon) {
+      side_input = sign(side_input);
+   }
 
    vec3 wishvel =
        (forward * (fwd_input * input_wishspeed)) + (right * (side_input * input_wishspeed));
@@ -214,7 +230,7 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
    player->set_velocity_wr(vel);
 
    char move_info_str[4096];
-   sprintf(move_info_str, "velocity: (%.2f %.2f %.2f)\nspeed: %.2f\nhorizontal speed: %.2f", vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
+   sprintf(move_info_str, "velocity: (%.2f %.2f %.2f)\nspeed: %.2f\nhorizontal speed: %.2f", restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
    log_on_token(move_stats_token, move_info_str);
 }
 }

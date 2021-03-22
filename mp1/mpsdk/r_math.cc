@@ -10,6 +10,8 @@ float acos(float x) { return call_func<float, float>(0x80394c2c, x); }
 float atan2(float x) { return call_func<float, float>(0x80394c6c, x); }
 float sqrt(float x) { return call_func<float, float>(0x80315500, x); }
 float floor(float x) { return call_func<float, float>(0x803944c4, x); }
+float sign(float x) { return x > 0.f ? 1.f : -1.f; }
+float __attribute__ ((noinline)) fabs(float x) { asm("fabs 1,1"); return x; }
 
 float vec3::magnitude() const { return sqrt(magnitude_sqr()); }
 float vec3::xy_magnitude() const { return sqrt(x * x + y * y); }

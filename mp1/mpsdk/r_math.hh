@@ -10,6 +10,8 @@ float acos(float x);
 float atan2(float x);
 float sqrt(float x);
 float floor(float x);
+float sign(float x);
+float fabs(float x);
 
 template <typename T>
 constexpr T max(T a, T b) {
@@ -66,7 +68,9 @@ struct vec3 {
    void normalize();
 };
 
-struct vec4 { float v[4]; };
+struct vec4 {
+   float v[4];
+};
 
 struct mat34 {
    float m[3][4];
@@ -87,12 +91,14 @@ struct mat34 {
    mat34& operator=(mat34 const& rhs);
    vec3 operator*(vec3 const& rhs) const;
    mat34 operator*(mat34 const& rhs) const;
-   
+
    static mat34 scale(float x, float y, float z);
    static mat34 translate(float x, float y, float z);
 };
 
-struct mat3 { float m[3][3]; };
+struct mat3 {
+   float m[3][3];
+};
 
 struct aabox {
    vec3 mins;
