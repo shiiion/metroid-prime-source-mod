@@ -37,7 +37,7 @@ public:
 };
 
 class CElementGen : public CParticleGen {
-public:
+protected:
    TCachedToken<CGenDescription> gen_desc;
    CGenDescription* loaded_gen_desc;
    EModelOrientationType orient_type;
