@@ -13,6 +13,8 @@ float floor(float x);
 float sign(float x);
 float fabs(float x);
 
+double labs(double x);
+
 template <typename T>
 constexpr T max(T a, T b) {
    return (a > b ? a : b);

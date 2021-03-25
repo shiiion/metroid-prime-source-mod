@@ -58,3 +58,5 @@ using s64 = int64_t;
     c() = delete; \
     c(c const&) = delete; \
     c(c&&) = delete;
+
+void operator delete(void*, unsigned int);

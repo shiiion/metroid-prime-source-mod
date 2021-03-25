@@ -9,8 +9,8 @@ LINK_SCRIPT := $(PROJECT_BASE)mod_mapping.inc
 OUT_BUILD := $(PROJECT_BASE)build_dir/
 OUT_BIN := $(PROJECT_BASE)binary_dir/
 
-CPPFLAGS_NOOPT := -O0 -c -ffreestanding -fno-exceptions -std=c++17 -Wall -Wno-trigraphs -I$(PROJECT_BASE).
-CPPFLAGS_OPT := -O2 -c -ffreestanding -fno-exceptions -std=c++17 -Wall -Wno-trigraphs -I$(PROJECT_BASE).
+CPPFLAGS_NOOPT := -O0 -c -ffreestanding -fno-exceptions -fno-rtti -std=c++17 -Wall -Wno-trigraphs -I$(PROJECT_BASE).
+CPPFLAGS_OPT := -O2 -c -ffreestanding -fno-exceptions -fno-rtti -std=c++17 -Wall -Wno-trigraphs -I$(PROJECT_BASE).
 
 FREESTANDING_O := $(OUT_BUILD)lib_freestanding.o
 FREESTANDING_INC := $(PROJECT_BASE)freestanding.hh

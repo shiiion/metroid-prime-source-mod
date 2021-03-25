@@ -1,12 +1,13 @@
 #pragma once
 
 #include "freestanding.hh"
+#include "mp1/mpsdk/gendesc.hh"
 #include "mp1/mpsdk/r_math.hh"
+#include "mp1/mpsdk/random.hh"
 #include "mp1/mpsdk/retro_types.hh"
 #include "mp1/mpsdk/token.hh"
 #include "mp1/rstl/vector.hh"
 
-class CGenDescription;
 class CModVectorElement;
 
 enum class EModelOrientationType { Normal, One };
@@ -36,8 +37,8 @@ public:
 };
 
 class CElementGen : public CParticleGen {
-private:
-   TCachedToken<CGenDescription*> gen_desc;
+public:
+   TCachedToken<CGenDescription> gen_desc;
    CGenDescription* loaded_gen_desc;
    EModelOrientationType orient_type;
    rstl::vector<CParticle> particles;
@@ -51,7 +52,7 @@ private:
    int prev_frame;
    bool particle_emission;
    float generator_remainder;
-   int maxp;
+   int MAXP;
    u16 random_seed;
    float generator_rate;
    float external_vars[16];
@@ -85,6 +86,7 @@ private:
    bool models_use_lights : 1;
    bool enable_OPTS : 1;
    bool enable_ADV : 1;
+   bool use_input_dt : 1;
    int MBSP;
    u32 backup_light_active;
    bool has_VMD[4];
@@ -99,7 +101,7 @@ private:
    vec3 SSPO;
    int SESD;
    vec3 SEPO;
-   float celementgen_unk2;
+   float update_runtime; // formerly unk2
    float celementgen_unk3;
    vec3 aabb_min;
    vec3 aabb_max;

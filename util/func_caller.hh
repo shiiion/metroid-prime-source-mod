@@ -34,6 +34,6 @@ TRet call_vfunc(void* inst, uint32_t index, TArgs... args) {
 
 template <typename TRet, typename... TArgs>
 TRet call_vfunc(void const* inst, uint32_t index, TArgs... args) {
-   uintptr_t* table_base = *reinterpret_cast<uintptr_t**>(inst);
+   uintptr_t const* const table_base = *reinterpret_cast<uintptr_t const* const*>(inst);
    return call_class_func<TRet, TArgs...>(table_base[index + 2], inst, args...);
 }

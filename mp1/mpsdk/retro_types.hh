@@ -80,5 +80,3 @@ union CColor {
    constexpr CColor(u32 rgba) : rgba(rgba) {}
    constexpr CColor(u8 r, u8 g, u8 b, u8 a) : r(r), g(g), b(b), a(a) {}
 };
-
-using CRandom16 = s32;
