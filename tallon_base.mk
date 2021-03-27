@@ -1,8 +1,21 @@
-CC := powerpc-eabi-g++.exe
-LD := powerpc-eabi-ld.exe
-AR := powerpc-eabi-ar.exe
-AS := powerpc-eabi-as.exe
-MAKE := make
+ifeq ($(OS),Windows_NT)
+	CC = powerpc-eabi-g++.exe
+	LD = powerpc-eabi-ld.exe
+	AR = powerpc-eabi-ar.exe
+	AS = powerpc-eabi-as.exe
+else
+	UNAME = $(shell uname -s)
+	ifeq ($(UNAME),Linux)
+		CC = /opt/devkitpro/devkitPPC/bin/powerpc-eabi-g++
+		LD = /opt/devkitpro/devkitPPC/bin/powerpc-eabi-ld
+		AR = /opt/devkitpro/devkitPPC/bin/powerpc-eabi-ar
+		AS = /opt/devkitpro/devkitPPC/bin/powerpc-eabi-as
+	else
+		$(error unsupported OS $(UNAME)!)
+	endif
+endif
+
+MAKE = make
 
 PROJECT_BASE := $(dir $(lastword $(MAKEFILE_LIST)))
 LINK_SCRIPT := $(PROJECT_BASE)mod_mapping.inc
