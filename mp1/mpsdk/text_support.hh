@@ -91,4 +91,5 @@ public:
    void set_text(rstl::string_base const& str) {
       call_class_func<void*, rstl::string_base const&, bool>(0x802c9b08, this, str, false);
    }
+   void destroy() { call_class_func<void, int>(0x802c9c98, this, 0); }
 };

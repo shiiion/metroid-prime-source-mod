@@ -37,8 +37,6 @@ float stop_speed = 6.f;
 float underwater_movement_depth = 2.f;
 // Number of ticks after moving to falling state to get a double jump
 int leniency_ticks = 5;
-
-char debug_output[4096];
 }
 
 static int num_jumps = 0;
@@ -51,6 +49,15 @@ static void ensure_logging_init() {
    if (move_stats_token == kInvalidToken) {
       move_stats_token = generate_debug_log_token();
    }
+}
+
+void compute_movement_release() {
+   CStateManager::instance()->get_player()->set_gravity(kNormalGrav);
+   move_stats_token = kInvalidToken;
+}
+
+void compute_movement_suspend() {
+   CStateManager::instance()->get_player()->set_gravity(kNormalGrav);
 }
 
 void update_leniency_ticks(EPlayerMovementState move_state) {

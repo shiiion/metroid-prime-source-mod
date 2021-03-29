@@ -1,8 +1,3 @@
-<change> 80286f80 49579081 # mod entry point hook, after prologue of ComputeMovement
-<change> 80286f84 80010164 # next four changes are the epilogue of ComputeMovement
-<change> 80286f88 7c0803a6
-<change> 80286f8c 38210160
-<change> 80286f90 4e800020
 <change> 805a9eec 46800000 # Next two are RTOC constants used for MaxPositiveVerticalVelocity
 <change> 805a9ef0 46800000 # Allows player to fall at very high speeds, number somewhat arbitrary
 <change> 80016ad0 48000254 # Skips over velocity damping when initially hitting water
@@ -35,4 +30,7 @@
 <blhook> hooked_internalupdate 8031eb58
 <vthook> hooked_cmfgame_draw 803d99e8
 <trampoline> hooked_computemovement 80286f74
+
+<callgate> _callgate_table _mod_dispatch_table _callgate_dispatch _trampoline_restore_table
+<cleanup> release_mod shutdown_signal 8000579c
 <elf> source_movement_mp1.elf

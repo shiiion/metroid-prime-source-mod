@@ -4,6 +4,9 @@
 #include "mp1/mpsdk/collision.hh"
 #include "mp1/mpsdk/state_manager_min.hh"
 
+void rocket_jump_release() {}
+void rocket_jump_suspend() {}
+
 extern "C" {
 float rocket_blast_radius = 9.f;
 float rocket_velocity_multiplier = 1.f;

@@ -2,12 +2,12 @@
 #include "mp1/mod_shared.hh"
 #include "mp1/mpsdk/cmfgame.hh"
 #include "mp1/mpsdk/text_support.hh"
+#include "mp1/mpsdk/alloc.hh"
 
 bool dt_just_changed = false;
 static CGuiTextSupport* ingame_debug_text = nullptr;
 static float last_dt = kNormalDt;
 static LogToken delta_time_token = kInvalidToken;
-float mod_curtime = 0.f;
 
 // Exposed mod cvars
 extern "C" {
@@ -25,6 +25,19 @@ void update_dt_changed_flag(float dt) {
    dt_just_changed = (dt != last_dt);
    last_dt = dt;
 }
+
+void cmfgame_hooks_release() {
+   if (ingame_debug_text != nullptr) {
+      ingame_debug_text->destroy();
+      free(ingame_debug_text);
+      ingame_debug_text = nullptr;
+   }
+   delta_time_token = kInvalidToken;
+}
+
+// Don't free
+void cmfgame_hooks_suspend() {}
+
 static void ensure_logging_init() {
    if (ingame_debug_text == nullptr) {
       ingame_debug_text = CGuiTextSupport::create_debug_print(0.5f);

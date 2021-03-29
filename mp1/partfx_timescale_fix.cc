@@ -3,6 +3,9 @@
 #include "mp1/mpsdk/partfx.hh"
 #include "mp1/mpsdk/random.hh"
 
+void partfx_timescale_release() {}
+void partfx_timescale_suspend() {}
+
 class CElementGenFix : public CElementGen {
 public:
    bool internal_update_psts_fix(double dt) {
