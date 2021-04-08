@@ -1,0 +1,220 @@
+class CEntity {
+protected:
+   uintptr_t const* const vtable; // 0
+   TAreaId area_id; // 4
+   TUniqueId uid; // 8
+   TEditorId editor_id; // c
+   rstl::string name; // 10
+   rstl::vector<SConnection> connections; //1c
+   bool active : 1;
+   bool in_graveyard : 1;
+   bool scripting_blocked : 1;
+   bool in_use : 1;
+};
+
+class CActor : public CEntity {
+protected:
+   mat34 transform; // 2c
+   void* model_data; // 5c
+   CMaterialList materials; // 60
+   CMaterialFilter material_filter; // 68
+   u32 cactor_unk1; // 7c
+   u16 sfx_id; // 80
+   u16 sfx_handle; // 82
+   u8 cactor_unk2[0x10]; // 84
+   aabox render_bounds; // 94
+   struct {
+      u8 blend_mode;
+      u8 mat_set_idx;
+      u16 flags;
+      u32 color;
+   } model_flags; // ac
+   u8 cactor_unk3[0x3c]; // b4
+};
+
+struct CMotionState {
+   vec3 translation;
+   vec4 orientation_quat;
+   vec3 velocity;
+   vec3 angular_momentum;
+};
+
+class CPhysicsActor : public CActor {
+protected:
+   float mass; // f0
+   float inv_mass; // f4
+   float intertia_tensor; // f8
+   float inv_inertia_tensor; // fc
+   struct {
+      bool movable : 1;
+      bool angular_enabled : 1;
+   }; // 100
+   bool standard_collider; // 101
+   vec3 constant_force; // 104
+   vec3 angular_momentum; // 110
+   mat3 cphysicsactor_unk1; // 11c
+   vec3 velocity; // 140
+   vec3 angular_velocity; // 14c
+   vec3 momentum; // 158
+   vec3 force; // 164
+   vec3 impulse; // 170
+   vec3 torque; // 17c
+   vec3 angular_impuulse; // 188
+   vec3 move_impulse; // 194
+   vec3 move_angular_impulse; // 1a0
+   aabox base_bounding_box; // 1ac
+   u32 cphysicsactor_unk2; // 1c4
+   struct {
+      uintptr_t const* const vtable; // 1c8
+      u8 unk1[0x4]; // 1cc
+      CMaterialList materials; // 1d0
+      aabox bbox; // 1d8
+   } collision_primitive; // 1c8
+   vec3 primitive_offset; // 1f0
+   CMotionState last_noncolliding_state; // 1fc
+   rstl::optional<vec3> last_floor_plane_normal; // 230
+   float maximum_collision_velocity; // 240
+   float step_up_height; // 244
+   float step_down_height; // 248
+   float restitution_coefficient_modifier; // 24c
+   float collision_accuracy_modifier; // 250
+   u32 num_ticks_stuck; // 254
+   u32 num_ticks_partial_update; // 258
+};
+
+enum class EPlayerScanState { NotScanning, Scanning, ScanComplete };
+
+enum class EPlayerOrbitType { Close, Far, Default };
+
+enum class EPlayerOrbitState {
+   NoOrbit,
+   OrbitObject,
+   OrbitPoint,
+   OrbitCarcass,
+   ForcedOrbitObject,  // For CMetroidBeta attack
+   Grapple
+};
+
+enum class EPlayerOrbitRequest {
+   StopOrbit,
+   Respawn,
+   EnterMorphBall,
+   Default,
+   Four,
+   Five,
+   InvalidateTarget,
+   BadVerticalAngle,
+   ActivateOrbitSource,
+   ProjectileCollide,
+   Freeze,
+   DamageOnGrapple,
+   LostGrappleLineOfSight
+};
+
+enum class EPlayerZoneInfo { Targeting, Scan };
+
+enum class EPlayerZoneType { Always = -1, Box = 0, Ellipse };
+
+enum class EPlayerMovementState { OnGround, Jump, ApplyJump, Falling, FallingMorphed };
+
+enum class EPlayerMorphBallState { Unmorphed, Morphed, Morphing, Unmorphing };
+
+enum class EPlayerCameraState { FirstPerson, Ball, Two, Transitioning, Spawned };
+
+enum class ESurfaceRestraints { Normal, Air, Ice, Organic, Water, Lava, Phazon, Shrubbery };
+
+enum class EFootstepSfx { None, Left, Right };
+
+enum class EGrappleState { None, Firing, Pull, Swinging, JumpOff };
+
+enum class EGunHolsterState { Holstered, Drawing, Drawn, Holstering };
+
+class CPlayer : public CPhysicsActor {
+protected:
+   EPlayerMovementState movement_state; // 25c
+   rstl::vector<u8> ball_transition_res; // 260
+   TUniqueId attached_actor; // 26c
+   float attached_actor_time; // 270
+   struct {
+      rstl::vector<u8> sources; // 274
+      float energy_drain_time; // 280
+   } energy_drain; // 274
+   float starting_jump_timeout; // 284
+   float starting_jump_timer; // 288
+   float min_jump_timeout; // 28c
+   float jump_camera_timer; // 290
+   u32 jump_presses; // 294
+   float cplayer_unk1; // 298
+   float fall_camera_timer; // 29c
+   bool cancel_camera_pitch; // 2a0
+   float time_since_last_jump; // 2a4
+   ESurfaceRestraints surface_restraint; // 2a8
+   u32 out_of_water_ticks; // 2ac
+   rstl::reserved_vector<float, 6> acceleration_table; // 2b0
+   u32 cur_acceleration; // 2cc
+   float acceleration_change_timer; // 2d0
+   aabox fp_bounds; // 2d4
+   float ball_trans_height; // 2ec
+   EPlayerCameraState camera_state; // 2f0
+   EPlayerMorphBallState morphball_state; // 2f4
+   EPlayerMorphBallState spawned_morphball_state; // 2f8
+   float falling_time; // 2fc
+   EPlayerOrbitState orbit_state; // 300
+   EPlayerOrbitType orbit_type; // 304
+   EPlayerOrbitRequest orbit_request; // 308
+   TUniqueId orbit_target_id; // 30c
+   vec3 orbit_point; // 310
+   vec3 orbit_vector; // 31c
+   float orbit_mode_timer; // 328
+   EPlayerZoneInfo orbit_zone_mode; // 32c
+   EPlayerZoneType orbit_zone_type; // 330
+   u32 cplayer_unk2; // 334
+   TUniqueId orbit_next_target_id; // 338
+   float cplayer_unk3; // 33c
+   rstl::vector<TUniqueId> nearby_orbit_objects; // 340
+   rstl::vector<TUniqueId> on_screen_orbit_objects; // 34c
+   rstl::vector<TUniqueId> off_screen_orbit_objects; // 358
+   bool orbit_lock_established; // 364
+   float orbit_prevention_timer; // 368
+   bool sideways_dashing; // 36c
+   float strafe_input_at_dash; // 370
+   float dash_timer; // 374
+   float dash_button_hold_time; // 378
+   bool done_sideways_dashing; // 37c
+   u32 orbit_source; // 380
+   bool orbiting_enemy; // 384
+   float dash_speed_multiplier; // 388
+   bool no_strafe_dash_blend; // 38c
+   float dash_duration; // 390
+   float strafe_dash_blend_duration; // 394
+   EPlayerScanState scan_state; // 398
+   float scanning_time; // 39c
+   float cur_scan_time; // 3a0
+   TUniqueId scanning_object; // 3a4
+   EGrappleState grapple_state; // 3a8
+   float grapple_swing_timer; // 3ac
+   vec3 grapple_swing_axis; // 3b0
+   float cplayer_unk4; // 3bc
+   float cplayer_unk5; // 3c0
+   float cplayer_unk6; // 3c4
+   float grapple_jump_timeout; // 3c8
+   u8 cplayer_trilogy_unk7[0xb4]; // 3cc
+   void* player_gun; // 480
+   float gun_alpha; // 484
+   EGunHolsterState gun_holster_state; // 488
+   float gun_holster_rem_time; // 48c
+   void* failsafe_test; // 490
+   u8 cplayer_reservedaverage2[0x54]; // 494
+   float move_speed; // 4e8
+   float flat_move_speed; // 4ec
+   vec3 look_dir; // 4f0
+   vec3 move_dir; // 4fc
+   vec3 leave_morph_dir; // 508
+   vec3 last_pos_for_dir_calc; // 514
+   vec3 gun_dir; // 520
+   float time_moving; // 52c
+   vec3 control_dir; // 530
+   vec3 controld_dir_flat; // 53c
+   // Give up at this point, there's too much left
+   u8 cplayer_remaining_data[0xc78]; // 548
+};
