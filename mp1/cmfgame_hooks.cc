@@ -12,7 +12,7 @@ static LogToken delta_time_token = kInvalidToken;
 // Exposed mod cvars
 extern "C" {
 float game_timescale = 1.f;
-bool show_logs = true;
+bool show_logs = false;
 }
 
 extern "C" {
