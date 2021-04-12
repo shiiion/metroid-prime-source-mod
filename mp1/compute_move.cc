@@ -37,6 +37,10 @@ float stop_speed = 6.f;
 float underwater_movement_depth = 2.f;
 // Number of ticks after moving to falling state to get a double jump
 int leniency_ticks = 5;
+// Impulse to apply for each side dash
+float side_dash_impulse = 10.f;
+// Amount to reduce the height of the side dash by
+float side_dash_jump_height_reduction = 0.5f;
 }
 
 static int num_jumps = 0;
@@ -190,6 +194,22 @@ void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfa
    }
 }
 
+void compute_jump_vel(CPlayer* player, CFinalInput* input, float dt, ESurfaceRestraints restraint,
+                      CStateManager& mgr, vec3& vel) {
+   num_jumps++;
+
+   float side_input =
+       get_analog_input(ECommands::LookRight, input) - get_analog_input(ECommands::LookLeft, input);
+   if (player->get_orbit_state() != EPlayerOrbitState::NoOrbit && fabs(side_input) > 0.05) {
+      vec3 rt = player->get_transform().right() * side_input * side_dash_impulse;
+      vel += rt;
+      vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)] * side_dash_jump_height_reduction;
+   } else {
+      vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)];
+   }
+   player->set_move_state(EPlayerMovementState::Jump, mgr);
+}
+
 extern "C" {
 void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& mgr, float dt) {
    ensure_logging_init();
@@ -215,10 +235,7 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
    if ((jump_pressed && num_jumps == 0) ||
        (jump_this_tick && move_state != EPlayerMovementState::OnGround && num_jumps == 1 &&
         has_doublejump)) {
-      num_jumps++;
-      vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)];
-      vel += half_grav;
-      player->set_move_state(EPlayerMovementState::Jump, mgr);
+      compute_jump_vel(player, input, dt, restraint, mgr, vel);
       player->set_velocity_wr(vel);
       return;
    }

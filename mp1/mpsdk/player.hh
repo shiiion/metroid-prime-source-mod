@@ -52,7 +52,7 @@ enum class EGrappleState { None, Firing, Pull, Swinging, JumpOff };
 enum class EGunHolsterState { Holstered, Drawing, Drawn, Holstering };
 
 class CPlayer : public CPhysicsActor {
-public:
+protected:
    EPlayerMovementState movement_state;
    // Correct vector types only if needed
    rstl::vector<u8> ball_transition_res;
@@ -279,6 +279,7 @@ public:
       call_class_func<void, EPlayerMovementState, CStateManager&>(0x802863ec, this, state, mgr);
    }
    EPlayerMovementState get_move_state() const { return movement_state; }
+   EPlayerOrbitState get_orbit_state() const { return orbit_state; }
 
    ESurfaceRestraints get_surface_restraint(float underwater_move_depth) const;
    bool in_morphball() const;
