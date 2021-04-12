@@ -19,6 +19,6 @@ Ensure it has been installed in `/opt/devkitpro/devkitPPC`, check to make sure t
 ## Building and Running:
 Run `make` in the root directory of this project. This should generate an ELF under `binary_dir/<game>/`, and copy the mod metadata file (.mmd) in the same folder.
 
-Grab Ishiiruka Primehack, start up your copy of Metroid Prime, and load the mod (it wants the .mmd).
+Grab Primehack version 1.0.4, start up your copy of Metroid Prime, and load the mod (it wants the .mmd).
 
 > Note: MP1 mod only supports MP1 GC NTSC v1.00, MP2 mod only supports MP2 GC NTSC.
