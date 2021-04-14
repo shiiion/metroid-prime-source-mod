@@ -5,6 +5,7 @@
 <change> 80283a38 60000000
 <change> 80283a40 60000000
 <change> 80283a44 60000000
+<change> 80016f2c 48000030
 <cvar> airaccelerate_mul f32
 <cvar> accelerate_mul f32
 <cvar> max_walk_speed f32
@@ -26,13 +27,14 @@
 <cvar> show_logs bool
 <cvar> side_dash_impulse f32
 <cvar> side_dash_jump_height_reduction f32
+<cvar> crouch_height f32
+<cvar> crouch_max_speed_damp f32
 <vthook> hooked_energyprojectile_think 803e716c
 <vthook> hooked_cmfgame_onmessage 803d99e0
 <vthook> hooked_elementgen_update 803eda8c
 <blhook> hooked_internalupdate 8031eb58
 <vthook> hooked_cmfgame_draw 803d99e8
 <trampoline> hooked_computemovement 80286f74
-
 <callgate> _callgate_table _mod_dispatch_table _callgate_dispatch _trampoline_restore_table
 <cleanup> release_mod shutdown_signal 8000579c
 <elf> source_movement_mp1.elf

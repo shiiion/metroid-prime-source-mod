@@ -1,10 +1,12 @@
 #pragma once
 
+#include "mp1/mpsdk/r_math.hh"
 #include "mp1/mpsdk/retro_types.hh"
 #include "mp1/rstl/vector.hh"
 #include "util/func_caller.hh"
 
 class CEntity;
+class CActor;
 class CPlayer;
 class CPlayerState;
 
@@ -27,9 +29,9 @@ public:
 
    static CStateManager* instance() { return reinterpret_cast<CStateManager*>(0x8045a1a8); }
    CPlayer* get_player() const { return player; }
-   CPlayerState* get_player_state() const { return player_state == nullptr ? nullptr : *player_state; }
-   CEntity* object_by_id(TUniqueId id) const {
-      return call_class_func<CEntity*, TUniqueId>(0x8004C574, this, id);
-   }
+   CPlayerState* get_player_state() const;
+   CEntity* object_by_id(TUniqueId id) const;
    bool hurt_player(float amount);
+   void build_collider_list(rstl::reserved_vector<TUniqueId, 1024>& collider_out, CActor const& obj,
+                            aabox const& bbox) const;
 };

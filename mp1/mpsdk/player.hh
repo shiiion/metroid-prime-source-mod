@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mp1/mpsdk/input.hh"
 #include "mp1/mpsdk/physics_actor.hh"
 #include "mp1/mpsdk/player_state.hh"
 #include "mp1/rstl/vector.hh"
@@ -122,7 +123,7 @@ protected:
    float cplayer_unk6;
    float grapple_jump_timeout;
    bool in_free_look;
-   bool look_Button_held;
+   bool look_button_held;
    bool look_analog_held;
    float cur_free_look_centered_time;
    float free_look_yaw_angle;
@@ -273,15 +274,18 @@ protected:
    float samus_exhausted_voice_timer;
 
 public:
-   float get_gravity() const { return call_class_func<float>(0x8028835c, this); }
-
-   void set_move_state(EPlayerMovementState state, CStateManager& mgr) {
-      call_class_func<void, EPlayerMovementState, CStateManager&>(0x802863ec, this, state, mgr);
-   }
+   float get_gravity() const;
+   void set_move_state(EPlayerMovementState state, CStateManager& mgr);
    EPlayerMovementState get_move_state() const { return movement_state; }
    EPlayerOrbitState get_orbit_state() const { return orbit_state; }
 
    ESurfaceRestraints get_surface_restraint(float underwater_move_depth) const;
+   void set_fpbounds_z(float z) { fp_bounds.maxes.z = z; }
+   float get_fpbounds_z() { return fp_bounds.maxes.z; }
+   void* get_collision_prim() { return &collision_primitive; }
+
    bool in_morphball() const;
+   void clear_freelook_state();
+   void update_crosshair_state(CFinalInput const& input);
    static void set_gravity(float g);
 };

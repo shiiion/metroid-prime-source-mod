@@ -66,5 +66,6 @@ public:
    }
 
    aabox const& get_collision_bounds() const { return collision_primitive.bbox; }
+   aabox& get_collision_bounds() { return collision_primitive.bbox; }
    // add more as needed...
 };

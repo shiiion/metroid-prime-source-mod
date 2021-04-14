@@ -1,9 +1,11 @@
 #include "freestanding.hh"
+#include "mp1/mod_shared.hh"
+#include "mp1/mpsdk/collision.hh"
 #include "mp1/mpsdk/input.hh"
 #include "mp1/mpsdk/player.hh"
+#include "mp1/mpsdk/player_tweak.hh"
 #include "mp1/mpsdk/state_manager_min.hh"
 #include "mp1/rstl/string.hh"
-#include "mp1/mod_shared.hh"
 
 constexpr float kInputEpsilon = 0.001f;
 
@@ -41,6 +43,10 @@ int leniency_ticks = 5;
 float side_dash_impulse = 10.f;
 // Amount to reduce the height of the side dash by
 float side_dash_jump_height_reduction = 0.5f;
+// Height for crouching samus
+float crouch_height = 1.5f;
+// Speed damping for crouching samus
+float crouch_max_speed_damp = 0.5f;
 }
 
 static int num_jumps = 0;
@@ -76,8 +82,8 @@ void update_leniency_ticks(EPlayerMovementState move_state) {
    }
 }
 
-void compute_air_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfaceRestraints restraint,
-                          vec3& vel) {
+void compute_air_move_vel(CPlayer* player, CFinalInput* input, float dt,
+                          ESurfaceRestraints restraint, vec3& vel) {
    const mat34& player_xf = player->get_transform();
    vec3 forward = player_xf.fwd(), right = player_xf.right();
 
@@ -134,8 +140,8 @@ void compute_friction(float dt, vec3& vel) {
    }
 }
 
-void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfaceRestraints restraint,
-                           vec3& vel) {
+void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt,
+                           ESurfaceRestraints restraint, bool crouching, vec3& vel) {
    vel.z = 0;
    // first apply friction
    compute_friction(dt, vel);
@@ -174,6 +180,7 @@ void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfa
       }
    }
 
+   const float max_walk_speed_adjust = (crouching ? crouch_max_speed_damp : 1.f) *  max_walk_speed;
    const float currentspeed = vel.dot(wishdir);
    const float addspeed = wishspeed - currentspeed;
 
@@ -182,15 +189,15 @@ void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt, ESurfa
       // clamped again by the absolute maximum to be added
       const float accelspeed =
           min((accelerate_mul * accel_restraint_table[static_cast<int>(restraint)]) * dt *
-                  max(max_walk_speed, wishspeed),
+                  max(max_walk_speed_adjust, wishspeed),
               addspeed);
 
       vel += wishdir * accelspeed;
    }
    vel.z = 0;
 
-   if (vel.magnitude_sqr() > max_walk_speed * max_walk_speed) {
-      vel *= (max_walk_speed / vel.magnitude());
+   if (vel.magnitude_sqr() > max_walk_speed_adjust * max_walk_speed_adjust) {
+      vel *= (max_walk_speed_adjust / vel.magnitude());
    }
 }
 
@@ -203,11 +210,73 @@ void compute_jump_vel(CPlayer* player, CFinalInput* input, float dt, ESurfaceRes
    if (player->get_orbit_state() != EPlayerOrbitState::NoOrbit && fabs(side_input) > 0.05) {
       vec3 rt = player->get_transform().right() * side_input * side_dash_impulse;
       vel += rt;
-      vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)] * side_dash_jump_height_reduction;
+      vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)] *
+              side_dash_jump_height_reduction;
    } else {
       vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)];
    }
    player->set_move_state(EPlayerMovementState::Jump, mgr);
+}
+
+bool update_crouch(CPlayer* player, bool cur_crouch_button, EPlayerMovementState move_state,
+                   CStateManager const& mgr) {
+   static bool crouch_button_state = false;
+   static bool uncrouch_requested = false;
+   static bool is_crouching = false;
+
+   const auto do_crouch = [](CPlayer* player, EPlayerMovementState move_state) {
+      player->get_collision_bounds().maxes.z = crouch_height;
+      player->set_fpbounds_z(crouch_height);
+      if (move_state != EPlayerMovementState::OnGround) {
+         player->get_transform().set_loc(player->get_transform().loc() + vec3(0, 0, 2.7f - crouch_height));
+      }
+   };
+   const auto do_uncrouch = [](CPlayer* player, EPlayerMovementState move_state) {
+      player->get_collision_bounds().maxes.z = 2.7f;
+      player->set_fpbounds_z(2.7f);
+      if (move_state != EPlayerMovementState::OnGround) {
+         player->get_transform().set_loc(player->get_transform().loc() - vec3(0, 0, 2.7f - crouch_height));
+      }
+   };
+   const auto collision_detect = [](CPlayer* player, CStateManager const& mgr) -> bool {
+      rstl::reserved_vector<TUniqueId, 1024> near_list;
+      aabox player_bbox = player->get_collision_bounds();
+      player_bbox.mins += player->get_transform().loc();
+      player_bbox.maxes += player->get_transform().loc();
+      mgr.build_collider_list(near_list, *player, player_bbox);
+      CCollidableAABox fake_bbox(CMaterialList(), player_bbox);
+      constexpr CMaterialFilter filter =
+          CMaterialFilter::make_include(cons_matlist(EMaterialTypes::Solid));
+      return detect_collision_boolean(mgr, player->get_collision_prim(), player->get_transform(),
+                                      filter, near_list);
+   };
+
+   if (crouch_button_state != cur_crouch_button) {
+      if (cur_crouch_button && !uncrouch_requested) {
+         do_crouch(player, move_state);
+         is_crouching = true;
+      } else {
+         uncrouch_requested = true;
+         do_uncrouch(player, move_state);
+         if (collision_detect(player, mgr)) {
+            do_crouch(player, move_state);
+         } else {
+            uncrouch_requested = false;
+            is_crouching = false;
+         }
+      }
+   } else if (!cur_crouch_button && uncrouch_requested) {
+      do_uncrouch(player, move_state);
+      if (collision_detect(player, mgr)) {
+         do_crouch(player, move_state);
+      } else {
+         uncrouch_requested = false;
+         is_crouching = false;
+      }
+   }
+
+   crouch_button_state = cur_crouch_button;
+   return is_crouching;
 }
 
 extern "C" {
@@ -228,6 +297,9 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
 
    update_leniency_ticks(move_state);
 
+   const bool crouching =
+       update_crouch(player, get_digital_input(ECommands::LookHold1, input), move_state, mgr);
+
    vel += half_grav;
 
    const bool jump_pressed = get_digital_input(ECommands::JumpOrBoost, input);
@@ -243,7 +315,7 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
    if (move_state != EPlayerMovementState::OnGround) {
       compute_air_move_vel(player, input, dt, restraint, vel);
    } else {
-      compute_walk_move_vel(player, input, dt, restraint, vel);
+      compute_walk_move_vel(player, input, dt, restraint, crouching, vel);
    }
 
    vel += half_grav;
@@ -253,8 +325,11 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
 
    player->set_velocity_wr(vel);
 
-   char move_info_str[4096];
-   sprintf(move_info_str, "velocity: (%.2f %.2f %.2f)\nspeed: %.2f\nhorizontal speed: %.2f", restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
-   log_on_token(move_stats_token, move_info_str);
+   if (show_logs) {
+      char move_info_str[4096];
+      sprintf(move_info_str, "velocity: (%.2f %.2f %.2f)\nspeed: %.2f\nhorizontal speed: %.2f",
+            restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
+      log_on_token(move_stats_token, move_info_str);
+   }
 }
 }

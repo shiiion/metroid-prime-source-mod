@@ -61,9 +61,11 @@ int hooked_cmfgame_onmessage(CMFGame* cmfgame, CArchitectureMessage* arch_messag
       update_dt_changed_flag(scaled_dt);
       arch_message->get_param_val<float>() = scaled_dt;
 
-      char scaled_dt_fmt[128];
-      sprintf(scaled_dt_fmt, "dt = %.4f, timescale = %.4f", scaled_dt, game_timescale);
-      log_on_token(delta_time_token, scaled_dt_fmt);
+      if (show_logs) {
+         char scaled_dt_fmt[128];
+         sprintf(scaled_dt_fmt, "dt = %.4f, timescale = %.4f", scaled_dt, game_timescale);
+         log_on_token(delta_time_token, scaled_dt_fmt);
+      }
    } else if (message_type == EArchMsgType::UserInput) {
       arch_message->get_param_val<float>() = scaled_dt;
    }

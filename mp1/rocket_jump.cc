@@ -1,8 +1,9 @@
 #include "freestanding.hh"
-#include "mp1/mpsdk/weapons.hh"
-#include "mp1/mpsdk/player.hh"
 #include "mp1/mpsdk/collision.hh"
+#include "mp1/mpsdk/player.hh"
+#include "mp1/mpsdk/player_tweak.hh"
 #include "mp1/mpsdk/state_manager_min.hh"
+#include "mp1/mpsdk/weapons.hh"
 
 void rocket_jump_release() {}
 void rocket_jump_suspend() {}
@@ -21,7 +22,9 @@ void on_missile_explosion(CEnergyProjectile* projectile, float dt, CStateManager
    CPlayer* player = mgr.get_player();
    vec3 player_origin = player->get_transform().loc();
 
-   CMRay test_ray(explosion_origin, player_origin + vec3(0, 0, 2.5f));
+   CMRay test_ray(
+       explosion_origin,
+       player_origin + vec3(0, 0, player->get_fpbounds_z() - CTweakPlayer::instance()->eye_offset));
    aabox player_bbox = player->get_collision_bounds();
    player_bbox.move(player_origin);
    float ray_dist_min, ray_dist_max;
@@ -37,10 +40,11 @@ void on_missile_explosion(CEnergyProjectile* projectile, float dt, CStateManager
          return;
       }
       const float lerp_val = 1.f - sqrt(hit_dist / blast_radius_sq);
-      const float falloff = rocket_jump_speed_falloff_min +
-                      (rocket_jump_speed_falloff_max - rocket_jump_speed_falloff_min) * lerp_val;
+      const float falloff =
+          rocket_jump_speed_falloff_min +
+          (rocket_jump_speed_falloff_max - rocket_jump_speed_falloff_min) * lerp_val;
       vec3 move_vec = test_ray.dir * (rocket_jump_base_speed * falloff);
-      
+
       player->add_velocity(move_vec);
       mgr.hurt_player(rocket_jump_max_damage * lerp_val);
    }
