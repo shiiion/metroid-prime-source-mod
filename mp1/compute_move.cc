@@ -346,7 +346,6 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
 
    if (show_logs) {
       char move_info_str[4096];
-      vec3 pos = player->get_transform().loc();
       sprintf(move_info_str, "velocity: (%.2f %.2f %.2f)\nspeed: %.2f\nhorizontal speed: %.2f",
               restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
       log_on_token(move_stats_token, move_info_str);
