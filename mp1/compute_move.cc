@@ -180,7 +180,7 @@ void compute_walk_move_vel(CPlayer* player, CFinalInput* input, float dt,
       }
    }
 
-   const float max_walk_speed_adjust = (crouching ? crouch_max_speed_damp : 1.f) *  max_walk_speed;
+   const float max_walk_speed_adjust = (crouching ? crouch_max_speed_damp : 1.f) * max_walk_speed;
    const float currentspeed = vel.dot(wishdir);
    const float addspeed = wishspeed - currentspeed;
 
@@ -219,23 +219,24 @@ void compute_jump_vel(CPlayer* player, CFinalInput* input, float dt, ESurfaceRes
 }
 
 bool update_crouch(CPlayer* player, bool cur_crouch_button, EPlayerMovementState move_state,
-                   CStateManager const& mgr) {
+                   CStateManager& mgr) {
    static bool crouch_button_state = false;
    static bool uncrouch_requested = false;
    static bool is_crouching = false;
+   const float crouch_delta = 2.7f - crouch_height;
 
-   const auto do_crouch = [](CPlayer* player, EPlayerMovementState move_state) {
+   const auto do_crouch = [crouch_delta](CPlayer* player, EPlayerMovementState move_state) {
       player->get_collision_bounds().maxes.z = crouch_height;
       player->set_fpbounds_z(crouch_height);
       if (move_state != EPlayerMovementState::OnGround) {
-         player->get_transform().set_loc(player->get_transform().loc() + vec3(0, 0, 2.7f - crouch_height));
+         player->get_transform().set_loc(player->get_transform().loc() + vec3(0, 0, crouch_delta));
       }
    };
-   const auto do_uncrouch = [](CPlayer* player, EPlayerMovementState move_state) {
+   const auto do_uncrouch = [crouch_delta](CPlayer* player, EPlayerMovementState move_state) {
       player->get_collision_bounds().maxes.z = 2.7f;
       player->set_fpbounds_z(2.7f);
       if (move_state != EPlayerMovementState::OnGround) {
-         player->get_transform().set_loc(player->get_transform().loc() - vec3(0, 0, 2.7f - crouch_height));
+         player->get_transform().set_loc(player->get_transform().loc() - vec3(0, 0, crouch_delta));
       }
    };
    const auto collision_detect = [](CPlayer* player, CStateManager const& mgr) -> bool {
@@ -259,7 +260,25 @@ bool update_crouch(CPlayer* player, bool cur_crouch_button, EPlayerMovementState
          uncrouch_requested = true;
          do_uncrouch(player, move_state);
          if (collision_detect(player, mgr)) {
-            do_crouch(player, move_state);
+            if (move_state == EPlayerMovementState::OnGround) {
+               do_crouch(player, move_state);
+            } else {
+               vec3 cast_point = player->get_transform().loc() + vec3(0, 0, crouch_delta);
+               CRayCastResult result = ray_static_intersection(
+                   mgr, cast_point, vec3(0, 0, -1.f), crouch_delta,
+                   CMaterialFilter::make_include(cons_matlist(EMaterialTypes::Solid)));
+               if (result.valid) {
+                  player->get_transform().set_loc(result.point);
+                  vec3 v_stop = player->get_velocity();
+                  v_stop.z = 0;
+                  player->set_velocity_wr(v_stop);
+                  player->set_move_state(EPlayerMovementState::OnGround, mgr);
+                  uncrouch_requested = false;
+                  is_crouching = false;
+               } else {
+                  do_crouch(player, move_state);
+               }
+            }
          } else {
             uncrouch_requested = false;
             is_crouching = false;
@@ -289,17 +308,17 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
       player->set_gravity(kModdedGrav);
    }
 
+   const bool crouching = update_crouch(player, get_digital_input(ECommands::LookHold1, input),
+                                        player->get_move_state(), mgr);
+
    const vec3 half_grav(0.f, 0.f, player->get_gravity() * 0.5f * gravity_mul * dt);
-   vec3 vel = player->get_velocity();
    const bool has_doublejump = mgr.get_player_state()->has_powerup(EItemType::SpaceJumpBoots);
    const EPlayerMovementState move_state = player->get_move_state();
    const ESurfaceRestraints restraint = player->get_surface_restraint(underwater_movement_depth);
 
    update_leniency_ticks(move_state);
 
-   const bool crouching =
-       update_crouch(player, get_digital_input(ECommands::LookHold1, input), move_state, mgr);
-
+   vec3 vel = player->get_velocity();
    vel += half_grav;
 
    const bool jump_pressed = get_digital_input(ECommands::JumpOrBoost, input);
@@ -327,8 +346,9 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
 
    if (show_logs) {
       char move_info_str[4096];
+      vec3 pos = player->get_transform().loc();
       sprintf(move_info_str, "velocity: (%.2f %.2f %.2f)\nspeed: %.2f\nhorizontal speed: %.2f",
-            restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
+              restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
       log_on_token(move_stats_token, move_info_str);
    }
 }

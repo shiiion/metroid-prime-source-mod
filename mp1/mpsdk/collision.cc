@@ -22,6 +22,12 @@ bool detect_collision_boolean(CStateManager const& mgr, void const* collision_pr
                                                              filter, near_list);
 }
 
+CRayCastResult ray_static_intersection(CStateManager const& mgr, vec3 const& pos, vec3 const& dir,
+                                       float length, CMaterialFilter const& filter) {
+   return call_func<CRayCastResult, CStateManager const&, vec3 const&, vec3 const&, float,
+                    CMaterialFilter const&>(0x80184808, mgr, pos, dir, length, filter);
+}
+
 CCollisionPrimitive::CCollisionPrimitive(CMaterialList const& list) {
    call_class_func<void, CMaterialList const&>(0x802cf8b4, this, list);
 }
