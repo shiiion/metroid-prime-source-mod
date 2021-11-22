@@ -1,5 +1,5 @@
 # Source Movement Mods
-This mod is intended to give a couple of source-engine-like features to the Metroid Prime series. It requires my mod loader, a feature of [Ishiiruka Primehack](https://github.com/shiiion/Ishiiruka).
+This mod is intended to give a couple of source-engine-like features to the Metroid Prime series. It requires my mod loader, a feature of [Primehack](https://github.com/shiiion/dolphin).
 
 ## DevkitPro Setup:
 ### Windows:
