@@ -168,6 +168,8 @@ void stop_grav_boost(char* player) {
 
 extern "C" {
 
+int shutdown_signal = 0;
+
 float jump_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 1.f, 0.3f, 0.3f, 1.f};
 float accel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 1.f, 0.3f, 0.3f, 0.3f};
 // how fast can turning happen?
@@ -200,6 +202,8 @@ float screwattack_max_drop = 20.f;
 // Additional height to add to the screw attack start
 float screwattack_extra_starting_height = 2.f;
 
+void release_mod() {}
+
 char debug_output[2048];
 
 float lookup_jump_mult(char* player, int restraint) {
@@ -225,7 +229,6 @@ void compute_walk_move(char* player, void* input, void* mgr, float dt) {
   bool has_screwattack = has_powerup(27);
   bool has_gravboost = has_powerup(25);
   int move_state = *(int*)(player + 0x2d0);
-  sprintf(debug_output, "Move state:%d", move_state);
   
   if (move_state != 0) { 
     num_ticks_in_air++;
