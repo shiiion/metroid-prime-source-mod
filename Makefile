@@ -1,9 +1,12 @@
 include tallon_base.mk
 
-all : metroid_prime_1
+all : metroid_prime_1 metroid_prime_2
 
 metroid_prime_1 : directories $(FREESTANDING_O)
 	$(MAKE) -C mp1
+
+metroid_prime_2 : directories $(FREESTANDING_O)
+	$(MAKE) -C _old
 
 $(FREESTANDING_O) : $(FREESTANDING_SRC) $(FREESTANDING_INC)
 	$(CC) $(CPPFLAGS_OPT) -o $(FREESTANDING_O) $(FREESTANDING_SRC)

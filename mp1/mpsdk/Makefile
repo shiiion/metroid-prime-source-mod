@@ -4,24 +4,26 @@ LIBS := $(FREESTANDING_LIB)
 SRCS := $(wildcard *.cc)
 HDRS := $(wildcard *.hh) $(MP1_RSTL_H) $(UTIL_H)
 
-INTERMEDIATES := $(patsubst %.cc,$(OUT_BUILD)%.o,$(SRCS))
+MP1_BIN := $(OUT_BIN)mp1/
+MP1_BUILD := $(OUT_BUILD)mp1/
+INTERMEDIATES := $(patsubst %.cc,$(MP1_BUILD)%.o,$(SRCS))
 
-all : directories $(OUT_BIN)libmp1sdk.a
+all : directories $(MP1_BIN)libmp1sdk.a
 
-$(OUT_BIN)libmp1sdk.a : $(INTERMEDIATES)
+$(MP1_BIN)libmp1sdk.a : $(INTERMEDIATES)
 	$(AR) rcs $@ $^
 
-$(OUT_BUILD)%.o : %.cc $(HDRS)
+$(MP1_BUILD)%.o : %.cc $(HDRS)
 	$(CC) $(CPPFLAGS_OPT) -o $@ $<
 
-directories : $(OUT_BUILD) $(OUT_BIN)
+directories : $(MP1_BUILD) $(MP1_BIN)
 
-$(OUT_BUILD) :
-	mkdir -p $(OUT_BUILD)
-$(OUT_BIN) :
-	mkdir -p $(OUT_BIN)
+$(MP1_BUILD) :
+	mkdir -p $(MP1_BUILD)
+$(MP1_BIN) :
+	mkdir -p $(MP1_BIN)
 
 clean :
-	rm -f $(INTERMEDIATES) $(OUT_BIN)lib_mpsdk.a
+	rm -f $(INTERMEDIATES) $(MP1_BIN)lib_mpsdk.a
 
 .PHONY : all directories clean
