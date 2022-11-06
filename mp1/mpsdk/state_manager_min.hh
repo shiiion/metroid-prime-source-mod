@@ -1,9 +1,9 @@
 #pragma once
 
-#include "mp1/mpsdk/r_math.hh"
 #include "mp1/mpsdk/retro_types.hh"
 #include "mp1/rstl/vector.hh"
 #include "util/func_caller.hh"
+#include "util/r_math.hh"
 
 class CEntity;
 class CActor;

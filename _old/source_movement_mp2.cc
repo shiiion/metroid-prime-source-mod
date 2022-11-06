@@ -7,6 +7,12 @@ inline float sqrt(float x) {
   return ((sqrt_fn)0x8001D678)(x);
 }
 
+template <typename T, uint32_t _Max>
+struct reserved_vec {
+  uint32_t size = 0;
+  T storage[_Max];
+};
+
 struct vec3 {
   vec3() : vec3(0, 0, 0) {}
   vec3(float x, float y, float z) : x(x), y(y), z(z) {}
@@ -75,6 +81,29 @@ struct Transform {
 
   vec3 loc() const { return vec3(m[0][3], m[1][3], m[2][3]); }
 };
+
+struct matfilter {
+  uint64_t include;
+  uint64_t exclude;
+  uint32_t type;
+};
+
+struct aabb {
+  vec3 min;
+  vec3 max;
+};
+
+Transform& get_transform(char* player) {
+  return *(Transform*)(player + 0x24);
+}
+
+aabb& get_collision_bounds(char* player) {
+  return *(aabb*)(player + 0x240);
+}
+
+void* get_player_prim(char* player) {
+  return player + 0x230;
+}
 
 float get_analog_input(void* player_plus_13d0, int command, void* input) {
   using get_analog_input_fn = float (*)(void*, int, void*, int);
@@ -165,6 +194,10 @@ void stop_grav_boost(char* player) {
 #define sprintf(str, fmt, ...) \
   ((int (*)(char *, const char *, ...))0x8034BEEC)((str), (fmt), __VA_ARGS__)
 
+template <typename... Ts>
+constexpr uint64_t cons_matlist(Ts... types) {
+   return uint64_t{0} | ((uint64_t{1} << static_cast<uint32_t>(types)) | ...);
+}
 
 extern "C" {
 
@@ -201,6 +234,8 @@ int leniency_ticks = 5;
 float screwattack_max_drop = 20.f;
 // Additional height to add to the screw attack start
 float screwattack_extra_starting_height = 2.f;
+// The height which you crouch to
+float crouch_height = 0.5f;
 
 void release_mod() {}
 
@@ -213,6 +248,73 @@ float lookup_jump_mult(char* player, int restraint) {
   return jump_restraint_table[restraint];
 }
 
+void build_collider_list(void* mgr, reserved_vec<uint16_t, 1024>& near, void* actor, aabb const& bounds) {
+  using bcl_fn = void (*)(void*, reserved_vec<uint16_t, 1024>&, void*, aabb const&);
+  ((bcl_fn)0x80041ac0)(mgr, near, actor, bounds);
+}
+
+bool detect_collision_boolean(void* mgr, void* prim, Transform const* xf, matfilter const& filter, reserved_vec<uint16_t, 1024>const& near_list) {
+  using dcb_fn = bool (*)(void*, void*, Transform const*, matfilter const&, reserved_vec<uint16_t, 1024>const&);
+  return ((dcb_fn)0x80127388)(mgr, prim, xf, filter, near_list);
+}
+
+bool collision_detect(char* player, void* mgr) {
+  reserved_vec<uint16_t, 1024> near_list;
+  aabb player_bb = get_collision_bounds(player);
+  const Transform& player_xf = get_transform(player);
+  player_bb.min += player_xf.loc();
+  player_bb.max += player_xf.loc();
+  build_collider_list(mgr, near_list, player, player_bb);
+  matfilter filter;
+  filter.include = cons_matlist(0x3b);
+  filter.exclude = 0;
+  filter.type = 1;
+  bool detected = detect_collision_boolean(mgr, get_player_prim(player), &get_transform(player), filter, near_list);
+  return detected;
+}
+
+bool update_crouch(char* player, bool cur_crouch_button, int move_state, void* mgr) {
+  static bool crouch_button_state = false;
+  static bool uncrouch_requested = false;
+  static bool is_crouching = false;
+
+  const auto do_crouch = [](char* player) {
+    get_collision_bounds(player).max.z = crouch_height;
+    *(float*)(player + 0x380) = crouch_height;
+  };
+  const auto do_uncrouch = [](char* player) {
+    get_collision_bounds(player).max.z = 2.7f;
+    *(float*)(player + 0x380) = 2.7f;
+  };
+  
+  if (crouch_button_state != cur_crouch_button) {
+    if (cur_crouch_button && !uncrouch_requested) {
+      do_crouch(player);
+      is_crouching = true;
+    } else {
+      uncrouch_requested = true;
+      do_uncrouch(player);
+      if (collision_detect(player, mgr)) {
+        do_crouch(player);
+      } else {
+        uncrouch_requested = false;
+        is_crouching = false;
+      }
+    }
+  } else if (!cur_crouch_button && uncrouch_requested) {
+    do_uncrouch(player);
+    if (collision_detect(player, mgr)) {
+      do_crouch(player);
+    } else {
+      uncrouch_requested = false;
+      is_crouching = false;
+    }
+  }
+
+  crouch_button_state = cur_crouch_button;
+  return is_crouching;
+}
+
 // TODO: make this code less source-engine like (looks AWFUL!!)
 void compute_walk_move(char* player, void* input, void* mgr, float dt) {
   if (in_morphball(player)) {
@@ -220,6 +322,10 @@ void compute_walk_move(char* player, void* input, void* mgr, float dt) {
   } else {
     set_gravity(-51.f);
   }
+  int move_state = *(int*)(player + 0x2d0);
+  bool crouch_hold = get_digital_input(player+0x13d0, 0x26, input);
+  update_crouch(player, crouch_hold, move_state, mgr);
+
   set_gravboost_force(13000.f);
   set_screwattack_leniency_height(screwattack_max_drop);
   static int num_jumps = 0;
@@ -228,7 +334,6 @@ void compute_walk_move(char* player, void* input, void* mgr, float dt) {
   bool has_doublejump = has_powerup(24);
   bool has_screwattack = has_powerup(27);
   bool has_gravboost = has_powerup(25);
-  int move_state = *(int*)(player + 0x2d0);
   
   if (move_state != 0) { 
     num_ticks_in_air++;

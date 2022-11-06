@@ -1,9 +1,9 @@
 #pragma once
 
 #include "freestanding.hh"
-#include "mp1/mpsdk/materials.hh"
-#include "mp1/mpsdk/retro_types.hh"
-#include "mp1/rstl/vector.hh"
+#include "mp2/mpsdk/materials.hh"
+#include "mp2/mpsdk/retro_types.hh"
+#include "mp2/rstl/vector.hh"
 #include "util/r_math.hh"
 
 class CStateManager;

@@ -1,8 +1,9 @@
-<change> 8041a568 46800000 # Next four are RTOC constants used for MaxPositiveVerticalVelocity
-<change> 8041a56c 46800000 # Allows player to fall at very high speeds, number somewhat arbitrary
-<change> 8041a570 46800000
-<change> 8041a574 46800000
-<change> 80015684 480004a8 # skip over water damping
+<change> 805cde14 46800000 # Next four are RTOC constants used for MaxPositiveVerticalVelocity
+<change> 805cde18 46800000 # Allows player to fall at very high speeds, number somewhat arbitrary
+<change> 805cde1c 46800000
+<change> 805cde24 46800000
+<change> 805cde28 46800000
+<change> 80144a78 480008c4 # skip over water damping
 <cvar> airaccelerate_mul f32
 <cvar> accelerate_mul f32
 <cvar> max_walk_speed f32
@@ -15,7 +16,7 @@
 <cvar> underwater_movement_depth f32
 <cvar> leniency_ticks i32
 <cvar> crouch_height f32
-<trampoline> compute_walk_move 801883ec
+<trampoline> hooked_computemove 8015e4b0
 <callgate> _callgate_table _mod_dispatch_table _callgate_dispatch _trampoline_restore_table
 <cleanup> release_mod shutdown_signal 800063d8
-<elf> source_movement_mp2.elf
+<elf> source_movement_mp2_trilogy.elf

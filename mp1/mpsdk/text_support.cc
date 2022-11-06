@@ -1,7 +1,7 @@
 #include "mp1/mpsdk/text_support.hh"
 
 #include "mp1/mpsdk/alloc.hh"
-#include "mp1/mpsdk/r_math.hh"
+#include "util/r_math.hh"
 
 CGuiTextSupport* CGuiTextSupport::create_debug_print(float scale_factor) {
    CGuiTextSupport* inst = alloc_inst<CGuiTextSupport>();

@@ -3,7 +3,7 @@
 #include "mp1/mpsdk/entity.hh"
 #include "mp1/mpsdk/materials.hh"
 #include "mp1/mpsdk/player_state.hh"
-#include "mp1/mpsdk/r_math.hh"
+#include "util/r_math.hh"
 
 class CActor : public CEntity {
 protected:

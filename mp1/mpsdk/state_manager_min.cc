@@ -3,7 +3,7 @@
 #include "mp1/mpsdk/damage_info.hh"
 #include "mp1/mpsdk/materials.hh"
 #include "mp1/mpsdk/player.hh"
-#include "mp1/mpsdk/r_math.hh"
+#include "util/r_math.hh"
 
 CPlayerState* CStateManager::get_player_state() const {
    return player_state == nullptr ? nullptr : *player_state;

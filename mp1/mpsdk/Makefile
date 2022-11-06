@@ -16,14 +16,7 @@ $(MP1_BIN)libmp1sdk.a : $(INTERMEDIATES)
 $(MP1_BUILD)%.o : %.cc $(HDRS)
 	$(CC) $(CPPFLAGS_OPT) -o $@ $<
 
-directories : $(MP1_BUILD) $(MP1_BIN)
-
-$(MP1_BUILD) :
-	mkdir -p $(MP1_BUILD)
-$(MP1_BIN) :
-	mkdir -p $(MP1_BIN)
-
 clean :
-	rm -f $(INTERMEDIATES) $(MP1_BIN)lib_mpsdk.a
+	rm -f $(INTERMEDIATES) $(MP1_BIN)libmp1sdk.a
 
 .PHONY : all directories clean

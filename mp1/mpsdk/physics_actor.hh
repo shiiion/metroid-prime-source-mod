@@ -1,8 +1,8 @@
 #pragma once
 
 #include "mp1/mpsdk/actor.hh"
-#include "mp1/mpsdk/r_math.hh"
 #include "mp1/rstl/optional.hh"
+#include "util/r_math.hh"
 
 struct CMotionState {
    vec3 translation;

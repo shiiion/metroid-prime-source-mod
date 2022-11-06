@@ -2,11 +2,11 @@
 
 #include "freestanding.hh"
 #include "mp1/mpsdk/gendesc.hh"
-#include "mp1/mpsdk/r_math.hh"
 #include "mp1/mpsdk/random.hh"
 #include "mp1/mpsdk/retro_types.hh"
 #include "mp1/mpsdk/token.hh"
 #include "mp1/rstl/vector.hh"
+#include "util/r_math.hh"
 
 class CModVectorElement;
 
