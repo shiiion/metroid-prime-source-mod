@@ -31,6 +31,7 @@ public:
 
    GEN_GET_SET(gravity, float, 0x104)
    GEN_GET_SET(gravboost_force, float, 0x168)
+   GEN_GET_SET(eye_offset, float, 0x174)
 };
 
 class CTweakPowerup : public CTweak {

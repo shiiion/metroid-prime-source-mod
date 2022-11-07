@@ -36,4 +36,5 @@ public:
    mat34& get_transform() { return transform; }
    vec3 const& get_position() const { return position; }
    vec3& get_position() { return position; }
+   void set_position(vec3 const& pos) { position = pos; }
 };

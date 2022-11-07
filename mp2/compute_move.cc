@@ -42,6 +42,8 @@ int leniency_ticks = 5;
 float screwattack_max_drop = 20.f;
 // Additional height to add to the screw attack start
 float screwattack_extra_starting_height = 2.f;
+// Gravity booster force
+float gravboost_force = 13000.f;
 // The height which you crouch to
 float crouch_height = 1.5f;
 // Speed damping for crouching samus
@@ -62,14 +64,21 @@ bool update_crouch(CPlayer* player, bool cur_crouch_button, EPlayerMovementState
    static bool crouch_button_state = false;
    static bool uncrouch_requested = false;
    static bool is_crouching = false;
+   const float crouch_delta = 2.7f - crouch_height;
 
-   constexpr auto do_crouch = [](CPlayer* player) {
+   const auto do_crouch = [crouch_delta](CPlayer* player, EPlayerMovementState move_state) {
       player->get_collision_bounds().maxes.z = crouch_height;
       player->set_fpbounds_z(crouch_height);
+      if (move_state != EPlayerMovementState::OnGround) {
+         player->set_position(player->get_transform().loc() + vec3(0, 0, crouch_delta));
+      }
    };
-   constexpr auto do_uncrouch = [](CPlayer* player) {
+   const auto do_uncrouch = [crouch_delta](CPlayer* player, EPlayerMovementState move_state) {
       player->get_collision_bounds().maxes.z = 2.7f;
       player->set_fpbounds_z(2.7f);
+      if (move_state != EPlayerMovementState::OnGround) {
+         player->set_position(player->get_transform().loc() - vec3(0, 0, crouch_delta));
+      }
    };
    const auto collision_detect = [](CPlayer* player, CStateManager const& mgr) -> bool {
       rstl::reserved_vector<TUniqueId, 1024> near_list;
@@ -85,22 +94,40 @@ bool update_crouch(CPlayer* player, bool cur_crouch_button, EPlayerMovementState
   
    if (crouch_button_state != cur_crouch_button) {
       if (cur_crouch_button && !uncrouch_requested) {
-         do_crouch(player);
+         do_crouch(player, move_state);
          is_crouching = true;
       } else {
          uncrouch_requested = true;
-         do_uncrouch(player);
+         do_uncrouch(player, move_state);
          if (collision_detect(player, mgr)) {
-            do_crouch(player);
+            if (move_state == EPlayerMovementState::OnGround) {
+               do_crouch(player, move_state);
+            } else {
+               vec3 cast_point = player->get_position() + vec3(0, 0, crouch_delta);
+               CRayCastResult result = ray_static_intersection(
+                   mgr, cast_point, vec3(0, 0, -1.f), crouch_delta,
+                   CMaterialFilter::make_include(cons_matlist(EMaterialTypes::Solid)));
+               if (result.valid) {
+                  player->set_position(result.point);
+                  vec3 v_stop = player->get_velocity();
+                  v_stop.z = 0;
+                  player->set_velocity_wr(v_stop);
+                  player->set_move_state(EPlayerMovementState::OnGround, mgr);
+                  uncrouch_requested = false;
+                  is_crouching = false;
+               } else {
+                  do_crouch(player, move_state);
+               }
+            }
          } else {
             uncrouch_requested = false;
             is_crouching = false;
          }
       }
    } else if (!cur_crouch_button && uncrouch_requested) {
-      do_uncrouch(player);
+      do_uncrouch(player, move_state);
       if (collision_detect(player, mgr)) {
-         do_crouch(player);
+         do_crouch(player, move_state);
       } else {
          uncrouch_requested = false;
          is_crouching = false;
@@ -123,17 +150,16 @@ void update_leniency_ticks(EPlayerMovementState move_state) {
    }
 }
 
+constexpr float kNormalGrav = -35.f;
 void update_tweaks(CPlayer* player) {
-   constexpr float kNormalGrav = -35.f;
    constexpr float kModdedGrav = -51.f;
-   constexpr float kGravboostForce = 13000.f;
 
    if (player->in_morphball()) {
       CTweakPlayer::instance()->set_gravity(kNormalGrav);
    } else {
       CTweakPlayer::instance()->set_gravity(kModdedGrav);
    }
-   CTweakPlayer::instance()->set_gravboost_force(kGravboostForce);
+   CTweakPlayer::instance()->set_gravboost_force(gravboost_force);
    CTweakPowerup::instance()->set_screwattack_leniency_z(screwattack_max_drop);
 }
 
@@ -262,7 +288,13 @@ void compute_air_move_vel(CPlayer* player, CFinalInput* input, float dt,
 }
 
 extern "C" {
-void release_mod() {}
+void release_mod() {
+   constexpr float kNormalGravboost = 9000.f;
+   constexpr float kNormalScrewattackLeniency = 4.5f;
+   CTweakPlayer::instance()->set_gravity(kNormalGrav);
+   CTweakPlayer::instance()->set_gravboost_force(kNormalGravboost);
+   CTweakPowerup::instance()->set_screwattack_leniency_z(kNormalScrewattackLeniency);
+}
 
 void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& mgr, float dt) {
    update_tweaks(player);

@@ -14,7 +14,18 @@
 <cvar> stop_speed f32
 <cvar> underwater_movement_depth f32
 <cvar> leniency_ticks i32
+<cvar> screwattack_max_drop f32
+<cvar> screwattack_extra_starting_height f32
+<cvar> gravboost_force f32
 <cvar> crouch_height f32
+<cvar> crouch_max_speed_damp f32
+<cvar> rocket_blast_radius f32
+<cvar> rocket_velocity_multiplier f32
+<cvar> rocket_jump_base_speed f32
+<cvar> rocket_jump_speed_falloff_max f32
+<cvar> rocket_jump_speed_falloff_min f32
+<cvar> rocket_jump_max_damage f32
+<vthook> hooked_energyprojectile_think 803b2fe0
 <trampoline> hooked_computemovement 801883ec
 <callgate> _callgate_table _mod_dispatch_table _callgate_dispatch _trampoline_restore_table
 <cleanup> release_mod shutdown_signal 800063d8
