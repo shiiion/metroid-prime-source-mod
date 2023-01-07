@@ -1,0 +1,84 @@
+name: Source Movement Mods
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container: devkitpro/devkitppc:latest
+ 
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Build artifacts
+      run: |
+        mkdir build_dir
+        make -j2
+
+    - name: Copy mp1 artifacts
+      run: | 
+        mkdir -p dist/mp1
+        cp binary_dir/mp1/source_movement_mp1.elf dist/mp1/
+        cp binary_dir/mp1/source_movement_mp1.mmd dist/mp1/
+
+    - name: Upload mp1 artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: source_movement_mp1
+        path: |
+         dist/mp1/
+
+    - name: Copy mp2 artifacts
+      run: | 
+        mkdir -p dist/mp2
+        cp binary_dir/mp2/source_movement_mp2.elf dist/mp2/
+        cp binary_dir/mp2/source_movement_mp2.mmd dist/mp2/
+         
+    - name: Upload mp2 artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: source_movement_mp2
+        path: |
+         dist/mp2/
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+      
+    - name: Download artifacts        
+      uses: actions/download-artifact@v3
+      with:
+        path: dist
+
+    - name: Re-zip artifacts
+      run: |
+        cd dist
+        zip -r source_movement_mp1.zip source_movement_mp1
+        zip -r source_movement_mp2.zip source_movement_mp2
+
+    - name: Update git tag
+      run: |
+        git tag -f Pre-release
+        git push -f origin Pre-release
+    
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        prerelease: true
+        allowUpdates: true
+        removeArtifacts: true
+        replacesArtifacts: false
+        tag: Pre-release
+        artifacts: "dist/*.zip"
