@@ -48,6 +48,10 @@ float gravboost_force = 13000.f;
 float crouch_height = 1.5f;
 // Speed damping for crouching samus
 float crouch_max_speed_damp = 0.5f;
+// Impulse to apply for each side dash
+float side_dash_impulse = 10.f;
+// Amount to reduce the height of the side dash by
+float side_dash_jump_height_reduction = 0.5f;
 
 char debug_output[2048];
 }
@@ -329,7 +333,17 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
                            num_jumps == 2 && water_depth < 1.25f;
    const bool gravboost_jump = jump_this_tick && has_gravboost && num_jumps == 2;
    if (first_jump || second_jump) {
-      vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)];
+      float side_input =
+         get_analog_input(player->get_input_mask(), ECommands::TurnOrLookRight, input) -
+         get_analog_input(player->get_input_mask(), ECommands::TurnOrLookLeft, input);
+      if (player->get_orbit_state() != EPlayerOrbitState::NoOrbit && fabs(side_input) > 0.05) {
+         vec3 rt = player->get_transform().right() * side_input * side_dash_impulse;
+         vel += rt;
+         vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)] *
+                 side_dash_jump_height_reduction;
+      } else {
+         vel.z = jump_impulse * jump_restraint_table[static_cast<int>(restraint)];
+      }
       vel += half_grav;
       player->set_move_state(EPlayerMovementState::Jump, mgr);
       player->set_velocity_wr(vel);

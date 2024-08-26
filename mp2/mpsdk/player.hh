@@ -12,6 +12,15 @@ enum class EPlayerMorphBallState { Unmorphed, Morphed, Morphing, Unmorphing };
 // There's more of em, though for the most part they don't matter
 enum class ESurfaceRestraints { Normal, Air, Unk0, Unk1, Unk2, Water, DarkWater, TheWeeds };
 
+enum class EPlayerOrbitState {
+   NoOrbit,
+   OrbitObject,
+   OrbitPoint,
+   OrbitCarcass,
+   ForcedOrbitObject,  // For CMetroidBeta attack
+   Grapple
+};
+
 class CPlayer : public CPhysicsActor {
 public:
    EPlayerMovementState movement_state; // 2d0
@@ -41,11 +50,13 @@ public:
    aabox fp_bounds; // 36c
    uint8_t cplayer_unk4[0x8]; // 384
    EPlayerMorphBallState morphball_state; // 38c
-   uint8_t cplayer_unk5[0xeb8]; // 390
+   uint8_t cplayer_unk5[0x14]; // 390
+   EPlayerOrbitState orbit_state; // 3a4
+   uint8_t cplayer_unk6[0xea0]; // 3a8
    float water_depth; // 1248
-   uint8_t cplayer_unk6[0xc8]; // 124c
+   uint8_t cplayer_unk7[0xc8]; // 124c
    CPlayerState* player_state; // 1314
-   uint8_t cplayer_unk7[0xb8]; // 1318
+   uint8_t cplayer_unk8[0xb8]; // 1318
    rstl::reserved_vector<bool, 0x4c> player_input_mask; // 13d0
 
 public:
@@ -57,6 +68,7 @@ public:
    void set_fpbounds_z(float z) { fp_bounds.maxes.z = z; }
    float get_fpbounds_z() { return fp_bounds.maxes.z; }
    void* get_collision_prim() { return &collision_primitive; }
+   EPlayerOrbitState get_orbit_state() { return orbit_state; }
    CPlayerState const* get_player_state() const { return player_state; }
    CPlayerState* get_player_state() { return player_state; }
    float get_water_depth() const { return water_depth; }
