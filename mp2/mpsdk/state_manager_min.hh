@@ -27,7 +27,7 @@ class CStateManager {
 public:
    NO_INSTANTIATE(CStateManager);
 
-   static CStateManager* instance() { return reinterpret_cast<CStateManager*>(0x8045a1a8); }
+   static CStateManager* instance() { return reinterpret_cast<CStateManager*>(0x803db6e0); }
    size_t get_num_players() const { return player_list.size(); }
    CPlayer* get_player() const { return player_list[0]; }
    CPlayer* get_player_by_num(int num) { return player_list[num]; }
