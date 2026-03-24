@@ -10,7 +10,7 @@ jobs:
  
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -26,7 +26,7 @@ jobs:
         cp binary_dir/mp1/source_movement_mp1.mmd dist/mp1/
 
     - name: Upload mp1 artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: source_movement_mp1
         path: |
@@ -39,7 +39,7 @@ jobs:
         cp binary_dir/mp2/source_movement_mp2.mmd dist/mp2/
          
     - name: Upload mp2 artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: source_movement_mp2
         path: |
@@ -53,12 +53,12 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
       
     - name: Download artifacts        
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: dist
 
