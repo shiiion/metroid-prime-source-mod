@@ -1,0 +1,34 @@
+<change> 801754c0 60000000 # The following two ignore the grapple arm animation state and force it hidden after releasing grapple targets
+<change> 801754d0 4800004c
+<change> 8049840c 7f84e378 # This is an absolute HACK. The blhook below to patch rocket velocity is given a constant 0 in param1, so I can pass along the active projectile to it
+<cvar> airaccelerate_mul f32
+<cvar> accelerate_mul f32
+<cvar> max_walk_speed f32
+<cvar> friction_mul f32
+<cvar> airaccelerate_wishspeed_clamp f32
+<cvar> jump_impulse f32
+<cvar> gravity_mul f32
+<cvar> input_wishspeed f32
+<cvar> stop_speed f32
+<cvar> leniency_ticks i32
+<cvar> screwattack_max_drop f32
+<cvar> screwattack_extra_starting_height f32
+<cvar> crouch_height f32
+<cvar> crouch_max_speed_damp f32
+<cvar> rocket_blast_radius f32
+<cvar> rocket_velocity_multiplier f32
+<cvar> rocket_jump_base_speed f32
+<cvar> rocket_jump_speed_falloff_max f32
+<cvar> rocket_jump_speed_falloff_min f32
+<cvar> rocket_jump_max_damage f32
+<cvar> side_dash_impulse f32
+<cvar> side_dash_jump_height_reduction f32
+<cvar> missile_cooldown f32
+<blhook> hooked_rightarm_anim_active 801883ac
+<blhook> hooked_energyprojectile_vel_init 80498418
+<vthook> hooked_energyprojectile_think 80599e0c
+<trampoline> hooked_computemovement 801799a8
+<trampoline> hooked_max_vertical_vel 80151d4c
+<callgate> _callgate_table _mod_dispatch_table _callgate_dispatch _trampoline_restore_table
+<cleanup> release_mod shutdown_signal 802ee2c0
+<elf> source_movement_mp3.elf
