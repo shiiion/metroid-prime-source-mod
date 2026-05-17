@@ -1,0 +1,448 @@
+{
+  "name": "Source Movement",
+  "version": "1.0",
+  "1S0N": {
+    "binpath": "Source1S0N.elf",
+    "codechanges": [
+      ["805a9eec", "46800000"],
+      ["805a9ef0", "46800000"],
+      ["80016ad0", "48000254"],
+      ["80283a30", "60000000"],
+      ["80283a38", "60000000"],
+      ["80283a40", "60000000"],
+      ["80283a44", "60000000"],
+      ["80016f2c", "48000030"],
+      ["80282e10", "60000000"]
+    ],
+    "cvars": [
+      {
+        "name": "airaccelerate_mul",
+        "desc": "Amount of acceleration applied in your movement direction while in the air.\nHigher values give better control when airstrafing.",
+        "type": "f32"
+      },
+      {
+        "name": "accelerate_mul",
+        "desc": "Amount of acceleration applied in your movement direction while on the ground.\nHigher values give better control when walking.",
+        "type": "f32"
+      },
+      {
+        "name": "max_walk_speed",
+        "desc": "Speed cap on walking movement.",
+        "type": "f32"
+      },
+      {
+        "name": "friction_mul",
+        "desc": "Amount of friction applied when walking.",
+        "type": "f32"
+      },
+      {
+        "name": "airaccelerate_wishspeed_clamp",
+        "desc": "Maximum speed you can move in the air holding a single direction of movement.",
+        "type": "f32"
+      },
+      {
+        "name": "jump_impulse",
+        "desc": "The vertical component which your velocity is set to when jumping.",
+        "type": "f32"
+      },
+      {
+        "name": "gravity_mul",
+        "desc": "Multiplier of the base gravity.",
+        "type": "f32"
+      },
+      {
+        "name": "input_wishspeed",
+        "desc": "The speed you will approach holding a single direction of movement.",
+        "type": "f32"
+      },
+      {
+        "name": "stop_speed",
+        "desc": "The minimum walking speed you can move at before completely stopping.",
+        "type": "f32"
+      },
+      {
+        "name": "underwater_movement_depth",
+        "desc": "How deep you have to be in water to switch to water-based movement.",
+        "type": "f32"
+      },
+      {
+        "name": "leniency_ticks",
+        "desc": "How many ticks (1/60th seconds) of coyote time you have.",
+        "type": "i32"
+      },
+      {
+        "name": "rocket_blast_radius",
+        "desc": "Radius of the missile's rocket-jumping knockback effect.\nDoes not effect the damaging radius for enemies.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_velocity_multiplier",
+        "desc": "Multiplier on the missile's base speed. Will affect homing at high multipliers.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_base_speed",
+        "desc": "The maximum speed a rocket jump can push you.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_speed_falloff_max",
+        "desc": "Maximum multiplier on rocket jump speed.\nThe closer you are to the explosion, the closer the speed multiplier gets to this value.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_speed_falloff_min",
+        "desc": "Minimum multiplier on rocket jump speed.\nThe further you are from the explosion, the closer the speed multiplier gets to this value until you are out of range.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_max_damage",
+        "desc": "The maximum amount of damage a rocket jump can do.\nThe closer you are to the explosion, the closer the damage gets to this value.",
+        "type": "f32"
+      },
+      {
+        "name": "game_timescale",
+        "desc": "Multiplier on the game's internal timescale.\nHigher values speed up simulation, lower values slow down simulation. Framerate is maintained.",
+        "type": "f32"
+      },
+      {
+        "name": "show_logs",
+        "desc": "Shows a small list of movement information the top corner of the screen.",
+        "type": "bool"
+      },
+      {
+        "name": "side_dash_impulse",
+        "desc": "Speed applied from a side dash.",
+        "type": "f32"
+      },
+      {
+        "name": "side_dash_jump_height_reduction",
+        "desc": "Approximately how much shorter your jump is when side-dashing",
+        "type": "f32"
+      },
+      {
+        "name": "crouch_height",
+        "desc": "Height when crouching. Samus' normal (non-crouching) height is 2.7 units.",
+        "type": "f32"
+      },
+      {
+        "name": "crouch_max_speed_damp",
+        "desc": "How much max walking speed is reduced when crouching.",
+        "type": "f32"
+      }
+    ],
+    "hooks": [
+      {
+        "mod_func": "hooked_energyprojectile_think",
+        "addr": "803e716c",
+        "type": "vtable"
+      },
+      {
+        "mod_func": "hooked_cmfgame_onmessage",
+        "addr": "803d99e0",
+        "type": "vtable"
+      },
+      {
+        "mod_func": "hooked_elementgen_update",
+        "addr": "803eda8c",
+        "type": "vtable"
+      },
+      {
+        "mod_func": "hooked_internalupdate",
+        "addr": "8031eb58",
+        "type": "callsite"
+      },
+      {
+        "mod_func": "hooked_cmfgame_draw",
+        "addr": "803d99e8",
+        "type": "vtable"
+      },
+      {
+        "mod_func": "hooked_computemovement",
+        "addr": "80286f74",
+        "type": "trampoline"
+      }
+    ]
+  },
+  "2S0N": {
+    "binpath": "Source2S0N.elf",
+    "codechanges": [
+      ["8041a568", "46800000"],
+      ["8041a56c", "46800000"],
+      ["8041a570", "46800000"],
+      ["8041a574", "46800000"],
+      ["80015684", "480004a8"]
+    ],
+    "cvars": [
+      {
+        "name": "airaccelerate_mul",
+        "desc": "Amount of acceleration applied in your movement direction while in the air.\nHigher values give better control when airstrafing.",
+        "type": "f32"
+      },
+      {
+        "name": "accelerate_mul",
+        "desc": "Amount of acceleration applied in your movement direction while on the ground.\nHigher values give better control when walking.",
+        "type": "f32"
+      },
+      {
+        "name": "max_walk_speed",
+        "desc": "Speed cap on walking movement.",
+        "type": "f32"
+      },
+      {
+        "name": "friction_mul",
+        "desc": "Amount of friction applied when walking.",
+        "type": "f32"
+      },
+      {
+        "name": "airaccelerate_wishspeed_clamp",
+        "desc": "Maximum speed you can move in the air holding a single direction of movement.",
+        "type": "f32"
+      },
+      {
+        "name": "jump_impulse",
+        "desc": "The vertical component which your velocity is set to when jumping.",
+        "type": "f32"
+      },
+      {
+        "name": "gravity_mul",
+        "desc": "Multiplier of the base gravity.",
+        "type": "f32"
+      },
+      {
+        "name": "input_wishspeed",
+        "desc": "The speed you will approach holding a single direction of movement.",
+        "type": "f32"
+      },
+      {
+        "name": "stop_speed",
+        "desc": "The minimum walking speed you can move at before completely stopping.",
+        "type": "f32"
+      },
+      {
+        "name": "leniency_ticks",
+        "desc": "How many ticks (1/60th seconds) of coyote time you have.",
+        "type": "i32"
+      },
+      {
+        "name": "screwattack_max_drop",
+        "desc": "Maximum distance you can fall during screwattack without exiting it.",
+        "type": "f32"
+      },
+      {
+        "name": "gravboost_force",
+        "desc": "Force applied when using the gravity boost.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_blast_radius",
+        "desc": "Radius of the missile's rocket-jumping knockback effect.\nDoes not effect the damaging radius for enemies.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_velocity_multiplier",
+        "desc": "Multiplier on the missile's base speed. Will affect homing at high multipliers.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_base_speed",
+        "desc": "The maximum speed a rocket jump can push you.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_speed_falloff_max",
+        "desc": "Maximum multiplier on rocket jump speed.\nThe closer you are to the explosion, the closer the speed multiplier gets to this value.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_speed_falloff_min",
+        "desc": "Minimum multiplier on rocket jump speed.\nThe further you are from the explosion, the closer the speed multiplier gets to this value until you are out of range.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_max_damage",
+        "desc": "The maximum amount of damage a rocket jump can do.\nThe closer you are to the explosion, the closer the damage gets to this value.",
+        "type": "f32"
+      },
+      {
+        "name": "side_dash_impulse",
+        "desc": "Speed applied from a side dash.",
+        "type": "f32"
+      },
+      {
+        "name": "side_dash_jump_height_reduction",
+        "desc": "Approximately how much shorter your jump is when side-dashing",
+        "type": "f32"
+      },
+      {
+        "name": "crouch_height",
+        "desc": "Height when crouching. Samus' normal (non-crouching) height is 2.7 units.",
+        "type": "f32"
+      },
+      {
+        "name": "crouch_max_speed_damp",
+        "desc": "How much max walking speed is reduced when crouching.",
+        "type": "f32"
+      }
+    ],
+    "hooks": [
+      {
+        "mod_func": "hooked_energyprojectile_think",
+        "addr": "803b2fe0",
+        "type": "vtable"
+      },
+      {
+        "mod_func": "hooked_computemovement",
+        "addr": "801883ec",
+        "type": "trampoline"
+      }
+    ]
+  },
+  "3S0N": {
+    "binpath": "Source3S0N.elf",
+    "codechanges": [
+      ["801754c0", "60000000"],
+      ["801754d0", "4800004c"],
+      ["8049840c", "7f84e378"]
+    ],
+    "cvars": [
+      {
+        "name": "airaccelerate_mul",
+        "desc": "Amount of acceleration applied in your movement direction while in the air.\nHigher values give better control when airstrafing.",
+        "type": "f32"
+      },
+      {
+        "name": "accelerate_mul",
+        "desc": "Amount of acceleration applied in your movement direction while on the ground.\nHigher values give better control when walking.",
+        "type": "f32"
+      },
+      {
+        "name": "max_walk_speed",
+        "desc": "Speed cap on walking movement.",
+        "type": "f32"
+      },
+      {
+        "name": "friction_mul",
+        "desc": "Amount of friction applied when walking.",
+        "type": "f32"
+      },
+      {
+        "name": "airaccelerate_wishspeed_clamp",
+        "desc": "Maximum speed you can move in the air holding a single direction of movement.",
+        "type": "f32"
+      },
+      {
+        "name": "jump_impulse",
+        "desc": "The vertical component which your velocity is set to when jumping.",
+        "type": "f32"
+      },
+      {
+        "name": "gravity_mul",
+        "desc": "Multiplier of the base gravity.",
+        "type": "f32"
+      },
+      {
+        "name": "input_wishspeed",
+        "desc": "The speed you will approach holding a single direction of movement.",
+        "type": "f32"
+      },
+      {
+        "name": "stop_speed",
+        "desc": "The minimum walking speed you can move at before completely stopping.",
+        "type": "f32"
+      },
+      {
+        "name": "leniency_ticks",
+        "desc": "How many ticks (1/60th seconds) of coyote time you have.",
+        "type": "i32"
+      },
+      {
+        "name": "screwattack_max_drop",
+        "desc": "Maximum distance you can fall during screwattack without exiting it.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_blast_radius",
+        "desc": "Radius of the missile's rocket-jumping knockback effect.\nDoes not effect the damaging radius for enemies.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_velocity_multiplier",
+        "desc": "Multiplier on the missile's base speed. Will affect homing at high multipliers.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_base_speed",
+        "desc": "The maximum speed a rocket jump can push you.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_speed_falloff_max",
+        "desc": "Maximum multiplier on rocket jump speed.\nThe closer you are to the explosion, the closer the speed multiplier gets to this value.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_speed_falloff_min",
+        "desc": "Minimum multiplier on rocket jump speed.\nThe further you are from the explosion, the closer the speed multiplier gets to this value until you are out of range.",
+        "type": "f32"
+      },
+      {
+        "name": "rocket_jump_max_damage",
+        "desc": "The maximum amount of damage a rocket jump can do.\nThe closer you are to the explosion, the closer the damage gets to this value.",
+        "type": "f32"
+      },
+      {
+        "name": "side_dash_impulse",
+        "desc": "Speed applied from a side dash.",
+        "type": "f32"
+      },
+      {
+        "name": "side_dash_jump_height_reduction",
+        "desc": "Approximately how much shorter your jump is when side-dashing",
+        "type": "f32"
+      },
+      {
+        "name": "crouch_height",
+        "desc": "Height when crouching. Samus' normal (non-crouching) height is 2.7 units.",
+        "type": "f32"
+      },
+      {
+        "name": "crouch_max_speed_damp",
+        "desc": "How much max walking speed is reduced when crouching.",
+        "type": "f32"
+      },
+      {
+        "name": "missile_cooldown",
+        "desc": "Cooldown time for missile firing. Here in place of the fast missile glitch from MP1.",
+        "type": "f32"
+      }
+    ],
+    "hooks": [
+      {
+        "mod_func": "hooked_rightarm_anim_active",
+        "addr": "801883ac",
+        "type": "callsite"
+      },
+      {
+        "mod_func": "hooked_energyprojectile_vel_init",
+        "addr": "80498418",
+        "type": "callsite"
+      },
+      {
+        "mod_func": "hooked_energyprojectile_think",
+        "addr": "80599e0c",
+        "type": "vtable"
+      },
+      {
+        "mod_func": "hooked_computemovement",
+        "addr": "801799a8",
+        "type": "trampoline"
+      },
+      {
+        "mod_func": "hooked_max_vertical_vel",
+        "addr": "80151d4c",
+        "type": "trampoline"
+      }
+    ]
+  }
+}

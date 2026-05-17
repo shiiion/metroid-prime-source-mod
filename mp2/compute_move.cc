@@ -40,8 +40,6 @@ float stop_speed = 6.f;
 int leniency_ticks = 5;
 // Maximum drop for screw attack
 float screwattack_max_drop = 20.f;
-// Additional height to add to the screw attack start
-float screwattack_extra_starting_height = 2.f;
 // Gravity booster force
 float gravboost_force = 13000.f;
 // The height which you crouch to
@@ -292,7 +290,7 @@ void compute_air_move_vel(CPlayer* player, CFinalInput* input, float dt,
 }
 
 extern "C" {
-void release_mod() {
+void mod_fini() {
    constexpr float kNormalGravboost = 9000.f;
    constexpr float kNormalScrewattackLeniency = 4.5f;
    CTweakPlayer::instance()->set_gravity(kNormalGrav);

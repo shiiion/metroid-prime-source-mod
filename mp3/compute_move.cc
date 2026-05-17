@@ -314,7 +314,9 @@ void compute_air_move_vel(CPlayer* player, CFinalInput* input, float dt,
 }
 
 extern "C" {
-void release_mod() { CTweakPlayer::instance()->set_gravity(kNormalGrav); }
+void mod_fini() {
+  CTweakPlayer::instance()->set_gravity(kNormalGrav);
+}
 
 void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& mgr, float dt) {
    update_tweaks(player);

@@ -5,9 +5,6 @@
 #include "mp2/mpsdk/state_manager_min.hh"
 #include "mp2/mpsdk/weapons.hh"
 
-void rocket_jump_release() {}
-void rocket_jump_suspend() {}
-
 extern "C" {
 float rocket_blast_radius = 9.f;
 float rocket_velocity_multiplier = 1.f;

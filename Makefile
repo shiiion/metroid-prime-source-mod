@@ -1,6 +1,7 @@
 include tallon_base.mk
 
 all : metroid_prime_1 metroid_prime_2 metroid_prime_3
+	zip -j -r "$(OUT_BIN)/Source Movement.zip" "Source Movement.mpk" binary_dir/mp1/Source1S0N.elf binary_dir/mp2/Source2S0N.elf binary_dir/mp3/Source3S0N.elf
 
 freestanding : $(FREESTANDING_O)
 

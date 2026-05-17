@@ -82,10 +82,13 @@ u32 hooked_energyprojectile_vel_init(Any const* any, CProjectileWeapon* wpn, vec
   vec3 tmp_vel;
 
   const u32 orig_ret = call_vfunc<u32, u32, vec3&>(any, 3, 0, tmp_vel);
-  if (is_missile(wpn->owner()->get_weapon_type())) {
-    tmp_vel *= rocket_velocity_multiplier;
+  // Thanks to unload order, we'll get a frame or two of the stated patch being reverted
+  if (wpn != nullptr) {
+    if (is_missile(wpn->owner()->get_weapon_type())) {
+      tmp_vel *= rocket_velocity_multiplier;
+    }
+    out_vel = tmp_vel;
   }
-  out_vel = tmp_vel;
   return orig_ret;
 }
 
