@@ -22,7 +22,7 @@ jobs:
     - name: Copy artifacts
       run: | 
         mkdir -p dist
-        cp "binary_dir/Source Movement.zip" dist/
+        cp "binary_dir/Source.zip" dist/
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
