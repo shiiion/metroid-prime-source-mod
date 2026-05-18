@@ -283,6 +283,11 @@
         "name": "crouch_max_speed_damp",
         "desc": "How much max walking speed is reduced when crouching.",
         "type": "f32"
+      },
+      {
+        "name": "missile_cooldown",
+        "desc": "Cooldown time for missile firing. Here in place of the rapid fire missile glitch from MP1.",
+        "type": "f32"
       }
     ],
     "hooks": [
@@ -295,6 +300,16 @@
         "mod_func": "hooked_computemovement",
         "addr": "801883ec",
         "type": "trampoline"
+      },
+      {
+        "mod_func": "hooked_fire_projectile",
+        "addr": "801c7f2c",
+        "type": "callsite"
+      },
+      {
+        "mod_func": "hooked_holster_cooldown_check",
+        "addr": "801c7e70",
+        "type": "callsite"
       }
     ]
   },
@@ -413,7 +428,7 @@
       },
       {
         "name": "missile_cooldown",
-        "desc": "Cooldown time for missile firing. Here in place of the fast missile glitch from MP1.",
+        "desc": "Cooldown time for missile firing. Here in place of the rapid fire missile glitch from MP1.",
         "type": "f32"
       }
     ],

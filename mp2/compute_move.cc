@@ -50,6 +50,8 @@ float crouch_max_speed_damp = 0.5f;
 float side_dash_impulse = 10.f;
 // Amount to reduce the height of the side dash by
 float side_dash_jump_height_reduction = 0.5f;
+// Cooldown for firing missiles
+float missile_cooldown = 0.2f;
 
 char debug_output[2048];
 }
@@ -60,6 +62,7 @@ char debug_output[2048];
 static int num_jumps = 0;
 static int num_ticks_in_air = 0;
 static bool is_gravboosting = false;
+static float missile_fire_elapsed = missile_cooldown;
 
 bool update_crouch(CPlayer* player, bool cur_crouch_button, EPlayerMovementState move_state,
                    CStateManager& mgr) {
@@ -300,6 +303,7 @@ void mod_fini() {
 
 void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& mgr, float dt) {
    update_tweaks(player);
+   missile_fire_elapsed += dt;
 
    const bool has_doublejump = player->get_player_state()->has_powerup(EItemType::SpaceJump);
    const bool has_screwattack = player->get_player_state()->has_powerup(EItemType::ScrewAttack);
@@ -369,5 +373,14 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
       vel.z = 0.f;
    }
    player->set_velocity_wr(vel);
+}
+
+bool hooked_holster_cooldown_check(void* anim_data, void* str) {
+   return missile_fire_elapsed < missile_cooldown;
+}
+
+void hooked_fire_projectile(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7) {
+   missile_fire_elapsed = 0.f;
+   call_func<void, u32, u32, u32, u32, u32>(0x801cc1a0, r3, r4, r5, r6, r7);
 }
 }
