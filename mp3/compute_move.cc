@@ -17,7 +17,7 @@ float airaccel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 1.f, 0.01f, 0.1f, 1.f};
 float airmove_clamp_table[8] = {1.f, 1.f, 1.f, 1.f, 1.f, 0.5f, 0.5f, 1.f};
 
 // Multiplier on air acceleration (primarily impacts how quickly turns can be done)
-float airaccelerate_mul = 500.f;
+float airaccelerate_mul = 20.f;
 // Multiplier on walking acceleration
 float accelerate_mul = 16.5f;
 // Maximum walking velocity (based on XY)
@@ -39,7 +39,7 @@ int leniency_ticks = 15;
 // Maximum drop for screw attack
 float screwattack_max_drop = 20.f;
 // The height which you crouch to
-float crouch_height = 0.75f;
+float crouch_height = 1.5f;
 // Speed damping for crouching samus
 float crouch_max_speed_damp = 0.5f;
 // Impulse to apply for each side dash

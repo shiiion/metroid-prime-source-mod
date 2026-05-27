@@ -14,7 +14,7 @@ float rocket_velocity_multiplier = 1.f;
 float rocket_jump_base_speed = 26.f;
 float rocket_jump_speed_falloff_max = 0.7f;
 float rocket_jump_speed_falloff_min = 0.3f;
-float rocket_jump_max_damage = 0.f;
+float rocket_jump_max_damage = 20.f;
 }
 
 void on_missile_explosion(CEnergyProjectile* projectile, float dt, CStateManager& mgr) {

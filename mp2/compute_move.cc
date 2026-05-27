@@ -19,7 +19,7 @@ float airaccel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 1.f, 0.01f, 0.1f, 1.f};
 float airmove_clamp_table[8] = {1.f, 1.f, 1.f, 1.f, 1.f, 0.5f, 0.5f, 1.f};
 
 // Multiplier on air acceleration (primarily impacts how quickly turns can be done)
-float airaccelerate_mul = 500.f;
+float airaccelerate_mul = 20.f;
 // Multiplier on walking acceleration
 float accelerate_mul = 16.5f;
 // Maximum walking velocity (based on XY)

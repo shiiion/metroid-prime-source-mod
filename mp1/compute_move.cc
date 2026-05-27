@@ -18,7 +18,7 @@ float airaccel_restraint_table[8] = {1.f, 1.f, 1.f, 1.f, 0.1f, 0.1f, 1.f, 1.f};
 float airmove_clamp_table[8] = {1.f, 1.f, 1.f, 1.f, 0.5f, 0.5f, 1.f, 1.f};
 
 // Multiplier on air acceleration (primarily impacts how quickly turns can be done)
-float airaccelerate_mul = 500.f;
+float airaccelerate_mul = 20.f;
 // Multiplier on walking acceleration
 float accelerate_mul = 16.5f;
 // Maximum walking velocity (based on XY)
@@ -350,5 +350,9 @@ void hooked_computemovement(CPlayer* player, CFinalInput* input, CStateManager& 
               restraint, vel.x, vel.y, vel.z, vel.magnitude(), vel.xy_magnitude());
       log_on_token(move_stats_token, move_info_str);
    }
+}
+
+float hooked_calc_surface_friction(void* morphball) {
+  return call_func<float, void*>(0x800f0010, morphball) * game_timescale;
 }
 }

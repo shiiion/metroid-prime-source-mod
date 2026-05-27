@@ -161,6 +161,11 @@
         "mod_func": "hooked_computemovement",
         "addr": "80286f74",
         "type": "trampoline"
+      },
+      {
+        "mod_func": "hooked_calc_surface_friction",
+        "addr": "800f60bc",
+        "type": "callsite"
       }
     ]
   },
