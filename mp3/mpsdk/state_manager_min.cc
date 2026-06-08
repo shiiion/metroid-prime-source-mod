@@ -8,10 +8,11 @@
 constexpr u32 kInvalidUniqueId = 0xffffffff;
 
 void CStateManager::hurt_player(float amount) {
+   UID invalid = {.uid = kInvalidUniqueId};
    const CDamageInfo dinfo(amount, 0);
-   call_class_func<void, u32, u32, u32, CDamageInfo const&,
+   call_class_func<void, UID const&, UID const&, UID const&, CDamageInfo const&,
                    CMaterialFilter const&, vec3 const&>(
-      0x80274acc, this, kInvalidUniqueId, get_player()->get_unique_id(), kInvalidUniqueId, dinfo,
+      0x80274acc, this, invalid, get_player()->get_unique_id(), invalid, dinfo,
       CMaterialFilter::make_include_exclude(cons_matlist(EMaterialTypes::Solid), CMaterialList()),
       vec3());
 }
